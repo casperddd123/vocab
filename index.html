@@ -1,0 +1,1494 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>br*t vocab</title>
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+:root { --bg:#8ACF00; --text:#000000; }
+html, body {
+    width:100%; height:100%; overflow:hidden;
+    font-family:'Arial Narrow',Arial,sans-serif;
+    -webkit-font-smoothing:none; -moz-osx-font-smoothing:unset;
+    text-rendering:optimizeSpeed;
+    user-select:none; -webkit-user-select:none;
+    -webkit-tap-highlight-color:transparent;
+}
+body {
+    background-color:var(--bg); color:var(--text);
+    transition:background-color 0.3s, color 0.3s;
+}
+.page {
+    position:absolute; inset:0; display:flex; flex-direction:column;
+    transition:opacity 0.25s ease, transform 0.25s ease;
+    overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch;
+}
+.page.hidden { opacity:0; pointer-events:none; transform:scale(0.97); }
+
+/* top bar - unified */
+.top-bar {
+    display:flex; align-items:center; padding:14px 18px; flex-shrink:0; gap:12px;
+    min-height:48px; width:100%;
+}
+.back-btn {
+    background:transparent; border:none; font-family:inherit;
+    font-size:clamp(13px,2.2vw,15px); color:inherit; cursor:pointer;
+    text-transform:lowercase; letter-spacing:0.05em; padding:6px 0; opacity:0.5;
+}
+
+/* home */
+.home-page { align-items:center; padding:0; }
+.home-header {
+    display:flex; flex-direction:column; align-items:center;
+    padding:clamp(32px,9vh,64px) 24px clamp(16px,4vh,32px); width:100%; flex-shrink:0;
+}
+.home-title {
+    font-size:clamp(32px,7vw,56px); text-transform:lowercase;
+    letter-spacing:0.03em; line-height:0.95; text-align:center;
+    filter:blur(0.8px); transform:scaleY(1.15);
+}
+.home-sub {
+    font-size:clamp(11px,1.8vw,13px); text-transform:lowercase;
+    letter-spacing:0.12em; opacity:0.3; margin-top:6px; filter:blur(0.3px);
+}
+.home-divider { width:clamp(36px,8vw,52px); height:1.5px; background:currentColor; opacity:0.15; margin:4px 0 14px; }
+.home-section { width:100%; max-width:400px; padding:0 24px; flex-shrink:0; }
+.section-label {
+    font-size:clamp(10px,1.6vw,12px); text-transform:lowercase;
+    letter-spacing:0.12em; opacity:0.25; margin-bottom:7px; padding-left:2px; filter:blur(0.3px);
+}
+.home-item {
+    display:flex; align-items:center; width:100%; padding:15px 18px;
+    font-family:inherit; font-size:clamp(16px,2.8vw,20px); text-align:left;
+    background:transparent; border:1.5px solid currentColor; color:inherit;
+    cursor:pointer; letter-spacing:0.03em; gap:10px; margin-bottom:6px;
+    transition:background 0.12s, color 0.12s;
+}
+.home-item:active { background:var(--text); color:var(--bg); }
+.home-item .item-icon { font-size:clamp(15px,2.6vw,20px); line-height:1; flex-shrink:0; opacity:0.45; }
+.home-item .item-label { flex:1; }
+.home-item .item-extra { font-size:clamp(10px,1.6vw,13px); opacity:0.3; letter-spacing:0.06em; flex-shrink:0; }
+.home-spacer { height:16px; flex-shrink:0; }
+.home-footer { margin-top:auto; padding:28px 24px; display:flex; justify-content:center; flex-shrink:0; font-size:10px; opacity:0.15; text-transform:lowercase; letter-spacing:0.1em; }
+
+/* list selection */
+.list-page { align-items:center; justify-content:flex-start; padding:24px; gap:22px; }
+.page-title {
+    font-size:clamp(19px,3.8vw,25px); letter-spacing:0.05em;
+    filter:blur(0.6px); transform:scaleY(1.15); text-align:center;
+}
+.page-subtitle { font-size:clamp(12px,2vw,15px); opacity:0.3; letter-spacing:0.06em; text-align:center; margin-top:-14px; filter:blur(0.3px); }
+.list-container { display:flex; flex-direction:column; gap:7px; width:100%; max-width:360px; }
+.list-item {
+    display:flex; align-items:center; justify-content:space-between;
+    width:100%; padding:15px 18px; font-family:inherit;
+    font-size:clamp(16px,2.8vw,20px); text-align:left;
+    background:transparent; border:1.5px solid currentColor; color:inherit;
+    cursor:pointer; letter-spacing:0.03em;
+    transition:background 0.12s, color 0.12s;
+}
+.list-item:active { background:var(--text); color:var(--bg); }
+.list-item .extra { font-size:clamp(10px,1.6vw,13px); opacity:0.3; letter-spacing:0.06em; }
+
+/* word list */
+.wordlist-page { padding:0; }
+.wordlist-header { padding:0 18px 6px; flex-shrink:0; }
+.wordlist-title {
+    font-size:clamp(17px,3.2vw,22px); letter-spacing:0.04em;
+    filter:blur(0.5px); transform:scaleY(1.12);
+}
+.wordlist-meta { display:flex; align-items:center; justify-content:space-between; margin-top:2px; }
+.wordlist-count { font-size:clamp(11px,1.8vw,13px); opacity:0.3; letter-spacing:0.06em; }
+.wordlist-start-btn {
+    background:transparent; border:1.5px solid currentColor; font-family:inherit;
+    font-size:clamp(11px,1.8vw,14px); color:inherit; cursor:pointer;
+    letter-spacing:0.06em; padding:5px 14px;
+    transition:background 0.12s, color 0.12s;
+}
+.wordlist-start-btn:active { background:var(--text); color:var(--bg); }
+.word-rows { flex:1; overflow-y:auto; padding:0 18px 18px; }
+.word-row {
+    display:flex; align-items:center; padding:13px 0;
+    border-bottom:1px solid rgba(0,0,0,0.1); gap:8px; cursor:pointer;
+}
+.word-row .row-en {
+    font-size:clamp(15px,2.5vw,19px); letter-spacing:0.02em;
+    filter:blur(0.4px); transform:scaleY(1.1); flex:1; min-width:0;
+}
+.word-row .row-zh {
+    font-size:clamp(11px,1.8vw,14px); opacity:0.4;
+    letter-spacing:0.03em; text-align:right; white-space:nowrap;
+}
+.word-row .row-fav {
+    background:transparent; border:none; font-size:clamp(18px,3vw,24px);
+    color:inherit; cursor:pointer; padding:6px 8px; opacity:0.18;
+    transition:opacity 0.15s; line-height:1; flex-shrink:0;
+}
+.word-row .row-fav.faved { opacity:0.75; }
+.word-row .row-fav:active { opacity:1; }
+
+/* favorites */
+.fav-page { padding:0; }
+.fav-header { padding:0 18px 6px; flex-shrink:0; display:flex; align-items:center; justify-content:space-between; }
+.fav-title { font-size:clamp(19px,3.8vw,25px); letter-spacing:0.05em; filter:blur(0.6px); transform:scaleY(1.15); }
+.fav-study-btn {
+    background:transparent; border:1.5px solid currentColor; font-family:inherit;
+    font-size:clamp(11px,1.8vw,14px); color:inherit; cursor:pointer;
+    letter-spacing:0.06em; padding:5px 14px;
+    transition:background 0.12s, color 0.12s;
+}
+.fav-study-btn:active { background:var(--text); color:var(--bg); }
+.fav-empty {
+    flex:1; display:flex; align-items:center; justify-content:center;
+    font-size:clamp(15px,2.8vw,18px); opacity:0.2; letter-spacing:0.06em; filter:blur(0.4px);
+}
+
+/* settings */
+.settings-page { padding:0 24px; gap:22px; }
+.settings-section { width:100%; max-width:400px; }
+.settings-label {
+    font-size:clamp(12px,2vw,15px); letter-spacing:0.08em; opacity:0.35;
+    margin-bottom:10px; filter:blur(0.3px);
+}
+.color-swatches { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:8px; }
+.color-swatch { width:34px; height:34px; border:1.5px solid currentColor; cursor:pointer; transition:transform 0.12s; }
+.color-swatch:active { transform:scale(1.15); }
+.color-swatch.active { outline:2px solid currentColor; outline-offset:2px; }
+.custom-row { display:flex; gap:8px; align-items:center; }
+.custom-color-input { width:34px; height:34px; border:1.5px solid currentColor; cursor:pointer; padding:2px; background:transparent; }
+.custom-hex {
+    font-family:inherit; font-size:13px; background:transparent;
+    border:1.5px solid currentColor; color:inherit; padding:5px 8px;
+    width:88px; letter-spacing:0.04em;
+}
+.settings-divider { width:100%; max-width:400px; height:1px; background:currentColor; opacity:0.08; }
+
+/* main flashcard */
+.main-page { justify-content:flex-start; padding:0; }
+.main-top-bar {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 18px; flex-shrink:0; min-height:48px;
+}
+.main-fav-btn {
+    background:transparent; border:none; font-size:clamp(22px,3.8vw,28px);
+    color:inherit; cursor:pointer; padding:6px 10px; opacity:0.22;
+    transition:opacity 0.15s; line-height:1;
+}
+.main-fav-btn.faved { opacity:0.8; }
+.main-fav-btn:active { opacity:1; }
+.progress-wrap { padding:2px 18px 0; flex-shrink:0; }
+.progress-info { display:flex; justify-content:space-between; font-size:clamp(10px,1.6vw,12px); opacity:0.35; letter-spacing:0.05em; margin-bottom:5px; }
+.progress-bar-outer { width:100%; height:2.5px; background:currentColor; opacity:0.1; }
+.progress-bar-inner { height:100%; background:currentColor; transition:width 0.3s ease; }
+.word-stage {
+    flex:1; display:flex; flex-direction:column; align-items:center;
+    justify-content:center; width:100%; cursor:pointer; padding:0 24px; min-height:0;
+}
+.word-text {
+    font-family:'Arial Narrow',Arial,sans-serif;
+    font-size:clamp(56px,11vw,108px); text-transform:lowercase;
+    letter-spacing:0.02em; line-height:1.08; text-align:center;
+    filter:blur(0.8px); transform:scaleY(1.15); word-break:break-all;
+    transition:filter 0.2s, transform 0.2s;
+}
+.word-meta-wrap {
+    display:flex; flex-direction:column; align-items:center; gap:6px;
+    margin-top:20px; opacity:0; transform:translateY(10px);
+    transition:opacity 0.25s ease, transform 0.25s ease;
+}
+.word-meta-wrap.revealed { opacity:1; transform:translateY(0); }
+.word-phonetic { font-size:clamp(14px,2.5vw,18px); opacity:0.28; letter-spacing:0.06em; text-align:center; filter:blur(0.3px); transform:scaleY(1.08); }
+.word-meta { font-size:clamp(16px,3vw,22px); opacity:0.4; letter-spacing:0.04em; text-align:center; filter:blur(0.3px); transform:scaleY(1.08); max-width:320px; line-height:1.4; }
+.tap-hint { margin-top:16px; font-size:clamp(11px,1.8vw,13px); opacity:0.18; letter-spacing:0.06em; filter:blur(0.3px); transition:opacity 0.25s; }
+.tap-hint.hidden-hint { opacity:0; }
+.speak-btn {
+    background:transparent; border:1px solid currentColor; font-size:clamp(16px,2.8vw,20px);
+    color:inherit; cursor:pointer; padding:8px 12px; opacity:0.2;
+    transition:opacity 0.15s; line-height:1; margin-top:12px; letter-spacing:0.04em;
+}
+.speak-btn:active { opacity:0.7; }
+.speak-btn.playing { opacity:0.6; }
+.bottom-bar {
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    padding:6px 16px 22px; width:100%; flex-wrap:wrap; flex-shrink:0;
+}
+.fam-btn {
+    background:transparent; border:1.5px solid currentColor; font-family:inherit;
+    font-size:clamp(13px,2.2vw,16px); color:inherit; cursor:pointer;
+    padding:9px 15px; letter-spacing:0.05em;
+    transition:background 0.12s, color 0.12s; flex-shrink:0;
+}
+.fam-btn:active { background:var(--text); color:var(--bg); }
+
+@media (min-width:768px) {
+    .home-item:hover, .list-item:hover { opacity:0.7; }
+    .wordlist-start-btn:hover, .fav-study-btn:hover { opacity:0.7; }
+    .home-section, .settings-section { max-width:440px; }
+    .list-container { max-width:400px; }
+}
+
+/* custom books */
+.custom-section { width:100%; max-width:400px; padding:0 24px 24px; flex-shrink:0; }
+.custom-item {
+    display:flex; align-items:center; justify-content:space-between;
+    width:100%; padding:15px 18px; font-family:inherit;
+    font-size:clamp(16px,2.8vw,20px); text-align:left;
+    background:transparent; border:1.5px solid currentColor; color:inherit;
+    cursor:pointer; letter-spacing:0.03em; margin-bottom:6px;
+    transition:background 0.12s, color 0.12s;
+}
+.custom-item:active { background:var(--text); color:var(--bg); }
+.custom-item .ci-label { flex:1; }
+.custom-item .ci-del {
+    background:transparent; border:none; font-size:clamp(18px,3vw,22px);
+    color:inherit; cursor:pointer; padding:4px 8px; opacity:0.3;
+    transition:opacity 0.15s; line-height:1;
+}
+.custom-item .ci-del:hover, .custom-item .ci-del:active { opacity:1; }
+.custom-create-btn {
+    width:100%; padding:13px 18px; font-family:inherit;
+    font-size:clamp(14px,2.4vw,17px); text-align:center;
+    background:transparent; border:1px dashed currentColor; color:inherit;
+    cursor:pointer; letter-spacing:0.05em; opacity:0.4; margin-bottom:6px;
+    transition:opacity 0.12s, background 0.12s, color 0.12s;
+}
+.custom-create-btn:active { opacity:0.8; background:var(--text); color:var(--bg); }
+.custom-empty { text-align:center; font-size:clamp(13px,2.2vw,16px); opacity:0.2; padding:20px 0; letter-spacing:0.04em; }
+
+/* add word form */
+.add-word-form {
+    display:flex; flex-direction:column; gap:8px;
+    padding:16px 18px; margin-bottom:12px;
+    border:1px solid currentColor; opacity:0.85;
+}
+.add-word-form input {
+    font-family:inherit; font-size:clamp(13px,2.2vw,15px);
+    background:transparent; border:1px solid currentColor; color:inherit;
+    padding:8px 10px; letter-spacing:0.03em; opacity:0.7;
+}
+.add-word-form input:focus { outline:none; opacity:1; }
+.add-word-form input::placeholder { color:inherit; opacity:0.2; }
+.add-word-row { display:flex; gap:6px; }
+.add-word-row input { flex:1; }
+.add-word-btns { display:flex; gap:6px; justify-content:flex-end; }
+.add-word-btns button {
+    font-family:inherit; font-size:clamp(12px,2vw,14px);
+    background:transparent; border:1.5px solid currentColor; color:inherit;
+    cursor:pointer; padding:7px 16px; letter-spacing:0.04em;
+    transition:background 0.12s, color 0.12s;
+}
+.add-word-btns button:active { background:var(--text); color:var(--bg); }
+.add-word-btns button.primary { background:var(--text); color:var(--bg); }
+.add-word-btns button.primary:active { background:transparent; color:var(--text); }
+
+/* edit/delete on word rows for custom lists */
+.word-row .row-actions {
+    display:flex; gap:4px; flex-shrink:0;
+}
+.word-row .row-del {
+    background:transparent; border:none; font-size:clamp(16px,2.8vw,20px);
+    color:inherit; cursor:pointer; padding:4px 6px; opacity:0.2;
+    transition:opacity 0.15s; line-height:1;
+}
+.word-row .row-del:active { opacity:1; }
+
+/* rename input */
+.rename-input {
+    font-family:inherit; font-size:inherit; background:transparent;
+    border:none; border-bottom:1px dashed currentColor; color:inherit;
+    width:100%; letter-spacing:0.03em; padding:2px 0; opacity:0.7;
+}
+.rename-input:focus { outline:none; opacity:1; }
+
+/* duplicate modal */
+.modal-overlay {
+    position:fixed; inset:0; background:var(--bg); opacity:0.92;
+    display:flex; align-items:center; justify-content:center; z-index:100;
+    flex-direction:column; gap:14px; padding:24px;
+}
+.modal-overlay input {
+    font-family:inherit; font-size:clamp(16px,3vw,22px); text-align:center;
+    background:transparent; border:1.5px solid currentColor; color:inherit;
+    padding:10px 14px; letter-spacing:0.04em; width:100%; max-width:320px;
+}
+.modal-overlay input:focus { outline:none; }
+.modal-overlay input::placeholder { color:inherit; opacity:0.2; }
+.modal-overlay .modal-btns { display:flex; gap:8px; }
+.modal-overlay button {
+    font-family:inherit; font-size:clamp(13px,2.2vw,15px);
+    background:transparent; border:1.5px solid currentColor; color:inherit;
+    cursor:pointer; padding:9px 20px; letter-spacing:0.04em;
+    transition:background 0.12s, color 0.12s;
+}
+.modal-overlay button:active { background:var(--text); color:var(--bg); }
+.modal-overlay .modal-hint { font-size:clamp(11px,1.8vw,13px); opacity:0.25; letter-spacing:0.06em; }
+</style>
+</head>
+<body>
+
+<div id="home-page" class="page home-page">
+    <div class="home-header">
+        <div class="home-title">br*t vocab</div>
+        <div class="home-sub">a vocabulary thing</div>
+        <div class="home-divider"></div>
+    </div>
+    <div class="home-section">
+        <button class="home-item" id="home-books">
+            <span class="item-icon">&#9776;</span>
+            <span class="item-label">词汇书选择</span>
+            <span class="item-extra" id="home-books-count"></span>
+        </button>
+    </div>
+    <div class="home-spacer"></div>
+    <div class="home-section" id="fav-section">
+        <div class="section-label">favorites</div>
+        <button class="home-item" id="home-fav-view">
+            <span class="item-icon">★</span>
+            <span class="item-label">收藏夹</span>
+            <span class="item-extra" id="home-fav-count"></span>
+        </button>
+        <button class="home-item" id="home-fav-study">
+            <span class="item-icon">▶</span>
+            <span class="item-label">背诵收藏</span>
+        </button>
+    </div>
+    <div class="home-spacer"></div>
+    <div class="home-section">
+        <div class="section-label">custom</div>
+        <button class="home-item" id="home-custom-books">
+            <span class="item-icon">+</span>
+            <span class="item-label">自定义词汇书</span>
+            <span class="item-extra" id="home-custom-count"></span>
+        </button>
+    </div>
+    <div class="home-spacer"></div>
+    <div class="home-section">
+        <button class="home-item" id="home-settings">
+            <span class="item-icon">&#9901;</span>
+            <span class="item-label">设置</span>
+        </button>
+    </div>
+    <div class="home-footer">键盘: ← 不认识 · ↓ 模糊 · → 认识 · 空格 显示释义</div>
+</div>
+
+<div id="book-page" class="page list-page hidden">
+    <div class="top-bar"><button class="back-btn" id="book-back-btn">← 返回</button></div>
+    <div class="page-title">词汇书选择</div>
+    <div class="page-subtitle">select a book</div>
+    <div class="list-container" id="book-container"></div>
+</div>
+
+<div id="list-page" class="page list-page hidden">
+    <div class="top-bar"><button class="back-btn" id="list-back-btn">← 返回</button></div>
+    <div class="page-title" id="list-page-title"></div>
+    <div class="page-subtitle">select a list</div>
+    <div class="list-container" id="list-container"></div>
+</div>
+
+<div id="wordlist-page" class="page wordlist-page hidden">
+    <div class="top-bar"><button class="back-btn" id="wordlist-back-btn">← 返回</button></div>
+    <div class="wordlist-header">
+        <div class="wordlist-title" id="wordlist-title"></div>
+        <div class="wordlist-meta">
+            <span class="wordlist-count" id="wordlist-count"></span>
+            <button class="wordlist-start-btn" id="wordlist-start-btn">开始学习</button>
+        </div>
+    </div>
+    <div class="word-rows" id="word-rows"></div>
+</div>
+
+<div id="fav-page" class="page fav-page hidden">
+    <div class="top-bar"><button class="back-btn" id="fav-back-btn">← 返回</button></div>
+    <div class="fav-header">
+        <div class="fav-title">收藏夹</div>
+        <button class="fav-study-btn" id="fav-study-btn">背诵全部</button>
+    </div>
+    <div class="word-rows" id="fav-rows"></div>
+    <div class="fav-empty" id="fav-empty" style="display:none;">还没有收藏单词</div>
+</div>
+
+<div id="settings-page" class="page settings-page hidden">
+    <div class="top-bar"><button class="back-btn" id="settings-back-btn">← 返回</button></div>
+    <div class="settings-section">
+        <div class="settings-label">背景颜色</div>
+        <div class="color-swatches" id="bg-swatches"></div>
+        <div class="custom-row">
+            <input type="color" class="custom-color-input" id="bg-color-picker">
+            <input type="text" class="custom-hex" id="bg-color-hex" maxlength="7" placeholder="#8ACF00">
+        </div>
+    </div>
+    <div class="settings-divider"></div>
+    <div class="settings-section">
+        <div class="settings-label">文字颜色</div>
+        <div class="color-swatches" id="text-swatches"></div>
+        <div class="custom-row">
+            <input type="color" class="custom-color-input" id="text-color-picker">
+            <input type="text" class="custom-hex" id="text-color-hex" maxlength="7" placeholder="#000000">
+        </div>
+    </div>
+</div>
+
+<div id="main-page" class="page main-page hidden">
+    <div class="main-top-bar">
+        <button class="back-btn" id="main-back-btn">← 返回</button>
+        <button class="main-fav-btn" id="main-fav-btn">★</button>
+    </div>
+    <div class="progress-wrap">
+        <div class="progress-info">
+            <span id="progress-label">剩余</span>
+            <span id="progress-count"></span>
+        </div>
+        <div class="progress-bar-outer"><div class="progress-bar-inner" id="progress-bar-inner"></div></div>
+    </div>
+    <div class="word-stage" id="word-stage">
+        <div class="word-text" id="word-text"></div>
+        <div class="word-meta-wrap" id="word-meta-wrap">
+            <div class="word-phonetic" id="word-phonetic"></div>
+            <div class="word-meta" id="word-meta"></div>
+        </div>
+        <div class="tap-hint" id="tap-hint">点击显示释义</div>
+        <button class="speak-btn" id="speak-btn" title="朗读发音">🔊</button>
+    </div>
+    <div class="bottom-bar" id="bottom-bar">
+        <button class="fam-btn" id="btn-unknown">不认识</button>
+        <button class="fam-btn" id="btn-unsure">模糊</button>
+        <button class="fam-btn" id="btn-know">认识</button>
+    </div>
+</div>
+
+<!-- custom books management -->
+<div id="custom-books-page" class="page list-page hidden">
+    <div class="top-bar"><button class="back-btn" id="custom-books-back-btn">← 返回</button></div>
+    <div class="page-title">自定义词汇书</div>
+    <div class="page-subtitle">my custom books</div>
+    <div class="list-container" id="custom-books-container"></div>
+    <div class="custom-section">
+        <button class="custom-create-btn" id="custom-create-book-btn">+ 创建词汇书</button>
+    </div>
+</div>
+
+<!-- custom lists (within a custom book) -->
+<div id="custom-lists-page" class="page list-page hidden">
+    <div class="top-bar"><button class="back-btn" id="custom-lists-back-btn">← 返回</button></div>
+    <div class="page-title" id="custom-lists-title"></div>
+    <div class="page-subtitle">custom book</div>
+    <div class="list-container" id="custom-lists-container"></div>
+    <div class="custom-section">
+        <button class="custom-create-btn" id="custom-create-list-btn">+ 创建列表</button>
+    </div>
+</div>
+
+<!-- custom word list -->
+<div id="custom-wordlist-page" class="page wordlist-page hidden">
+    <div class="top-bar"><button class="back-btn" id="custom-wordlist-back-btn">← 返回</button></div>
+    <div class="wordlist-header">
+        <div class="wordlist-title" id="custom-wordlist-title"></div>
+        <div class="wordlist-meta">
+            <span class="wordlist-count" id="custom-wordlist-count"></span>
+            <button class="wordlist-start-btn" id="custom-wordlist-start-btn">开始学习</button>
+        </div>
+    </div>
+    <div id="custom-add-word-form" class="add-word-form" style="display:none;">
+        <div class="add-word-row">
+            <input type="text" id="aw-en" placeholder="单词（必填）">
+            <input type="text" id="aw-ph" placeholder="音标（可选）">
+        </div>
+        <div class="add-word-row">
+            <input type="text" id="aw-ps" placeholder="词性（可选）" style="flex:0.6">
+            <input type="text" id="aw-zh" placeholder="释义（必填）" style="flex:1.4">
+        </div>
+        <div class="add-word-btns">
+            <button class="primary" id="aw-save">保存</button>
+            <button id="aw-cancel">取消</button>
+        </div>
+    </div>
+    <button class="custom-create-btn" id="custom-add-word-btn" style="margin:6px 18px;width:auto;">+ 添加单词</button>
+    <button class="custom-create-btn" id="custom-bulk-import-btn" style="margin:2px 18px;width:auto;">+ 批量导入</button>
+    <div class="word-rows" id="custom-word-rows"></div>
+</div>
+
+<!-- bulk import modal -->
+<div id="bulk-import-modal" class="modal-overlay" style="display:none;">
+    <div class="page-title" style="font-size:clamp(17px,3.5vw,23px);">批量导入单词</div>
+    <textarea id="bulk-import-text" style="
+        font-family:inherit; font-size:clamp(13px,2.2vw,15px);
+        background:transparent; border:1.5px solid currentColor; color:inherit;
+        width:100%; max-width:400px; height:200px; padding:12px;
+        letter-spacing:0.03em; resize:vertical; opacity:0.7;
+    " placeholder="每行一个单词，格式：&#10;单词  释义&#10;或粘贴 JSON：[{&quot;en&quot;:&quot;abandon&quot;,&quot;zh&quot;:&quot;放弃&quot;}]"></textarea>
+    <div class="modal-hint">支持格式：<br>1. 单词 词性 释义（空格/Tab分隔）<br>2. JSON数组：[{"en":"word","ph":"/.../","ps":"v.","zh":"释义"}]</div>
+    <div class="modal-btns">
+        <button id="bulk-import-do" class="primary">导入</button>
+        <button id="bulk-import-cancel">取消</button>
+    </div>
+</div>
+
+<script>
+window.onerror = function(msg, url, line, col, err) {
+    document.body.innerHTML += '<div style=\"position:fixed;top:0;left:0;right:0;background:#f00;color:#fff;padding:10px;font-size:14px;z-index:99999;white-space:pre-wrap;max-height:60vh;overflow:auto;font-family:monospace;\">JS ERROR: ' + msg + ' (line ' + line + ')</div>';
+    return false;
+};
+</script>
+<!-- Try to load full vocabulary data from external file -->
+<script src="brat-vocab-data.js"></script>
+<script>
+// ═══════════════ VOCABULARY DATA ═══════════════
+if(typeof V==='undefined'){var V={
+'CET-4 核心词汇':{lists:{
+'列表一':[
+ {en:'abandon',ph:'/əˈbændən/',ps:'v.',zh:'放弃；抛弃'},
+ {en:'ability',ph:'/əˈbɪləti/',ps:'n.',zh:'能力；才能'},
+ {en:'abroad',ph:'/əˈbrɔːd/',ps:'adv.',zh:'在国外；到国外'},
+ {en:'absence',ph:'/ˈæbsəns/',ps:'n.',zh:'缺席；不在'},
+ {en:'absolute',ph:'/ˈæbsəluːt/',ps:'adj.',zh:'绝对的；完全的'},
+ {en:'absorb',ph:'/əbˈzɔːrb/',ps:'v.',zh:'吸收；吸引'},
+ {en:'abstract',ph:'/ˈæbstrækt/',ps:'adj.',zh:'抽象的；摘要'},
+ {en:'abundant',ph:'/əˈbʌndənt/',ps:'adj.',zh:'丰富的；充裕的'},
+ {en:'academy',ph:'/əˈkædəmi/',ps:'n.',zh:'学院；学会'},
+ {en:'accelerate',ph:'/əkˈseləreɪt/',ps:'v.',zh:'加速；促进'},
+ {en:'access',ph:'/ˈækses/',ps:'n.',zh:'通道；进入；访问'},
+ {en:'accompany',ph:'/əˈkʌmpəni/',ps:'v.',zh:'陪伴；伴随'},
+ {en:'accomplish',ph:'/əˈkɑːmplɪʃ/',ps:'v.',zh:'完成；实现'},
+ {en:'account',ph:'/əˈkaʊnt/',ps:'n.',zh:'账户；说明'},
+ {en:'accurate',ph:'/ˈækjərət/',ps:'adj.',zh:'准确的；精确的'},
+ {en:'achieve',ph:'/əˈtʃiːv/',ps:'v.',zh:'达到；取得'},
+ {en:'acknowledge',ph:'/əkˈnɑːlɪdʒ/',ps:'v.',zh:'承认；确认'},
+ {en:'acquire',ph:'/əˈkwaɪər/',ps:'v.',zh:'获得；习得'},
+ {en:'adapt',ph:'/əˈdæpt/',ps:'v.',zh:'适应；改编'},
+ {en:'adequate',ph:'/ˈædɪkwət/',ps:'adj.',zh:'足够的；适当的'},
+],
+'列表二':[
+ {en:'adjust',ph:'/əˈdʒʌst/',ps:'v.',zh:'调整；适应'},
+ {en:'adopt',ph:'/əˈdɑːpt/',ps:'v.',zh:'采用；收养'},
+ {en:'advance',ph:'/ədˈvæns/',ps:'v.',zh:'前进；进步'},
+ {en:'advantage',ph:'/ədˈvæntɪdʒ/',ps:'n.',zh:'优点；优势'},
+ {en:'advertise',ph:'/ˈædvərtaɪz/',ps:'v.',zh:'做广告；宣传'},
+ {en:'affair',ph:'/əˈfer/',ps:'n.',zh:'事务；事件'},
+ {en:'affect',ph:'/əˈfekt/',ps:'v.',zh:'影响；感动'},
+ {en:'afford',ph:'/əˈfɔːrd/',ps:'v.',zh:'负担得起；提供'},
+ {en:'aggressive',ph:'/əˈɡresɪv/',ps:'adj.',zh:'侵略的；好斗的'},
+ {en:'allocate',ph:'/ˈæləkeɪt/',ps:'v.',zh:'分配；拨出'},
+ {en:'alternative',ph:'/ɔːlˈtɜːrnətɪv/',ps:'n.',zh:'替代方案'},
+ {en:'amateur',ph:'/ˈæmətər/',ps:'n.',zh:'业余爱好者'},
+ {en:'ambition',ph:'/æmˈbɪʃn/',ps:'n.',zh:'抱负；野心'},
+ {en:'analyze',ph:'/ˈænəlaɪz/',ps:'v.',zh:'分析；解析'},
+ {en:'annual',ph:'/ˈænjuəl/',ps:'adj.',zh:'每年的；年度的'},
+ {en:'anticipate',ph:'/ænˈtɪsɪpeɪt/',ps:'v.',zh:'预期；期望'},
+ {en:'anxiety',ph:'/æŋˈzaɪəti/',ps:'n.',zh:'焦虑；忧虑'},
+ {en:'apparent',ph:'/əˈpærənt/',ps:'adj.',zh:'明显的；表面的'},
+ {en:'appeal',ph:'/əˈpiːl/',ps:'v.',zh:'呼吁；吸引'},
+ {en:'appetite',ph:'/ˈæpɪtaɪt/',ps:'n.',zh:'食欲；胃口'},
+],
+'列表三':[
+ {en:'appliance',ph:'/əˈplaɪəns/',ps:'n.',zh:'电器；器具'},
+ {en:'application',ph:'/ˌæplɪˈkeɪʃn/',ps:'n.',zh:'申请；应用'},
+ {en:'appreciate',ph:'/əˈpriːʃieɪt/',ps:'v.',zh:'欣赏；感激'},
+ {en:'approach',ph:'/əˈproʊtʃ/',ps:'v.',zh:'接近；处理'},
+ {en:'appropriate',ph:'/əˈproʊpriət/',ps:'adj.',zh:'适当的'},
+ {en:'approve',ph:'/əˈpruːv/',ps:'v.',zh:'批准；赞成'},
+ {en:'arise',ph:'/əˈraɪz/',ps:'v.',zh:'出现；产生'},
+ {en:'arrange',ph:'/əˈreɪndʒ/',ps:'v.',zh:'安排；整理'},
+ {en:'artificial',ph:'/ˌɑːrtɪˈfɪʃl/',ps:'adj.',zh:'人造的；虚假的'},
+ {en:'aspect',ph:'/ˈæspekt/',ps:'n.',zh:'方面；层面'},
+ {en:'assemble',ph:'/əˈsembl/',ps:'v.',zh:'集合；组装'},
+ {en:'assess',ph:'/əˈses/',ps:'v.',zh:'评估；评定'},
+ {en:'assign',ph:'/əˈsaɪn/',ps:'v.',zh:'分配；指定'},
+ {en:'assist',ph:'/əˈsɪst/',ps:'v.',zh:'帮助；协助'},
+ {en:'associate',ph:'/əˈsoʊʃieɪt/',ps:'v.',zh:'联系；关联'},
+ {en:'assume',ph:'/əˈsuːm/',ps:'v.',zh:'假设；承担'},
+ {en:'atmosphere',ph:'/ˈætməsfɪr/',ps:'n.',zh:'大气；气氛'},
+ {en:'attach',ph:'/əˈtætʃ/',ps:'v.',zh:'附上；连接'},
+ {en:'attitude',ph:'/ˈætɪtuːd/',ps:'n.',zh:'态度；看法'},
+ {en:'attract',ph:'/əˈtrækt/',ps:'v.',zh:'吸引；引起'},
+],
+'列表四':[
+ {en:'authority',ph:'/əˈθɔːrəti/',ps:'n.',zh:'权威；当局'},
+ {en:'available',ph:'/əˈveɪləbl/',ps:'adj.',zh:'可用的；有效的'},
+ {en:'average',ph:'/ˈævərɪdʒ/',ps:'adj.',zh:'平均的；普通的'},
+ {en:'avoid',ph:'/əˈvɔɪd/',ps:'v.',zh:'避免；回避'},
+ {en:'balance',ph:'/ˈbæləns/',ps:'n.',zh:'平衡；余额'},
+ {en:'bargain',ph:'/ˈbɑːrɡən/',ps:'n.',zh:'便宜货；交易'},
+ {en:'barrier',ph:'/ˈbæriər/',ps:'n.',zh:'障碍；屏障'},
+ {en:'behavior',ph:'/bɪˈheɪvjər/',ps:'n.',zh:'行为；举止'},
+ {en:'benefit',ph:'/ˈbenɪfɪt/',ps:'n.',zh:'利益；好处'},
+ {en:'blame',ph:'/bleɪm/',ps:'v.',zh:'责备；归咎'},
+ {en:'border',ph:'/ˈbɔːrdər/',ps:'n.',zh:'边界；边境'},
+ {en:'budget',ph:'/ˈbʌdʒɪt/',ps:'n.',zh:'预算；经费'},
+ {en:'burden',ph:'/ˈbɜːrdn/',ps:'n.',zh:'负担；重担'},
+ {en:'campaign',ph:'/kæmˈpeɪn/',ps:'n.',zh:'运动；战役'},
+ {en:'capable',ph:'/ˈkeɪpəbl/',ps:'adj.',zh:'有能力的'},
+ {en:'capacity',ph:'/kəˈpæsəti/',ps:'n.',zh:'容量；能力'},
+ {en:'capture',ph:'/ˈkæptʃər/',ps:'v.',zh:'捕获；俘获'},
+ {en:'career',ph:'/kəˈrɪr/',ps:'n.',zh:'职业；生涯'},
+ {en:'category',ph:'/ˈkætəɡɔːri/',ps:'n.',zh:'类别；种类'},
+ {en:'challenge',ph:'/ˈtʃælɪndʒ/',ps:'n.',zh:'挑战；质疑'},
+],
+'列表五':[
+ {en:'character',ph:'/ˈkærəktər/',ps:'n.',zh:'性格；角色；字符'},
+ {en:'circumstance',ph:'/ˈsɜːrkəmstæns/',ps:'n.',zh:'环境；情况'},
+ {en:'claim',ph:'/kleɪm/',ps:'v.',zh:'声称；索取'},
+ {en:'climate',ph:'/ˈklaɪmət/',ps:'n.',zh:'气候；风气'},
+ {en:'combine',ph:'/kəmˈbaɪn/',ps:'v.',zh:'结合；联合'},
+ {en:'commit',ph:'/kəˈmɪt/',ps:'v.',zh:'承诺；犯罪'},
+ {en:'communicate',ph:'/kəˈmjuːnɪkeɪt/',ps:'v.',zh:'沟通；交流'},
+ {en:'community',ph:'/kəˈmjuːnəti/',ps:'n.',zh:'社区；社会'},
+ {en:'compare',ph:'/kəmˈper/',ps:'v.',zh:'比较；对比'},
+ {en:'compete',ph:'/kəmˈpiːt/',ps:'v.',zh:'竞争；比赛'},
+ {en:'complain',ph:'/kəmˈpleɪn/',ps:'v.',zh:'抱怨；投诉'},
+ {en:'complex',ph:'/kəmˈpleks/',ps:'adj.',zh:'复杂的；复合的'},
+ {en:'concentrate',ph:'/ˈkɑːnsntreɪt/',ps:'v.',zh:'集中；专注'},
+ {en:'concern',ph:'/kənˈsɜːrn/',ps:'n.',zh:'关注；担忧'},
+ {en:'conclude',ph:'/kənˈkluːd/',ps:'v.',zh:'总结；得出结论'},
+ {en:'conduct',ph:'/kənˈdʌkt/',ps:'v.',zh:'进行；引导'},
+ {en:'confident',ph:'/ˈkɑːnfɪdənt/',ps:'adj.',zh:'自信的；确信的'},
+ {en:'confirm',ph:'/kənˈfɜːrm/',ps:'v.',zh:'确认；证实'},
+ {en:'conflict',ph:'/ˈkɑːnflɪkt/',ps:'n.',zh:'冲突；矛盾'},
+ {en:'conscious',ph:'/ˈkɑːnʃəs/',ps:'adj.',zh:'意识到的；清醒的'},
+],
+'列表六':[
+ {en:'consequence',ph:'/ˈkɑːnsəkwens/',ps:'n.',zh:'结果；后果'},
+ {en:'conservative',ph:'/kənˈsɜːrvətɪv/',ps:'adj.',zh:'保守的'},
+ {en:'consume',ph:'/kənˈsuːm/',ps:'v.',zh:'消费；消耗'},
+ {en:'contact',ph:'/ˈkɑːntækt/',ps:'n.',zh:'接触；联系'},
+ {en:'contain',ph:'/kənˈteɪn/',ps:'v.',zh:'包含；容纳'},
+ {en:'context',ph:'/ˈkɑːntekst/',ps:'n.',zh:'上下文；背景'},
+ {en:'contract',ph:'/ˈkɑːntrækt/',ps:'n.',zh:'合同；契约'},
+ {en:'contribute',ph:'/kənˈtrɪbjuːt/',ps:'v.',zh:'贡献；捐献'},
+ {en:'convince',ph:'/kənˈvɪns/',ps:'v.',zh:'说服；使信服'},
+ {en:'cooperate',ph:'/koʊˈɑːpəreɪt/',ps:'v.',zh:'合作；协作'},
+ {en:'corporation',ph:'/ˌkɔːrpəˈreɪʃn/',ps:'n.',zh:'公司；企业'},
+ {en:'counter',ph:'/ˈkaʊntər/',ps:'n.',zh:'柜台；计数器'},
+ {en:'create',ph:'/kriˈeɪt/',ps:'v.',zh:'创造；创建'},
+ {en:'critical',ph:'/ˈkrɪtɪkl/',ps:'adj.',zh:'批评的；关键的'},
+ {en:'currency',ph:'/ˈkɜːrənsi/',ps:'n.',zh:'货币；通货'},
+ {en:'current',ph:'/ˈkɜːrənt/',ps:'adj.',zh:'当前的；流通的'},
+ {en:'decade',ph:'/ˈdekeɪd/',ps:'n.',zh:'十年'},
+ {en:'decline',ph:'/dɪˈklaɪn/',ps:'v.',zh:'下降；拒绝'},
+ {en:'define',ph:'/dɪˈfaɪn/',ps:'v.',zh:'定义；界定'},
+ {en:'deliver',ph:'/dɪˈlɪvər/',ps:'v.',zh:'递送；发表'},
+],
+'列表七':[
+ {en:'demand',ph:'/dɪˈmænd/',ps:'n.',zh:'需求；要求'},
+ {en:'demonstrate',ph:'/ˈdemənstreɪt/',ps:'v.',zh:'示范；证明'},
+ {en:'deny',ph:'/dɪˈnaɪ/',ps:'v.',zh:'否认；拒绝'},
+ {en:'department',ph:'/dɪˈpɑːrtmənt/',ps:'n.',zh:'部门；系'},
+ {en:'depend',ph:'/dɪˈpend/',ps:'v.',zh:'依赖；取决于'},
+ {en:'describe',ph:'/dɪˈskraɪb/',ps:'v.',zh:'描述；形容'},
+ {en:'deserve',ph:'/dɪˈzɜːrv/',ps:'v.',zh:'值得；应得'},
+ {en:'design',ph:'/dɪˈzaɪn/',ps:'v.',zh:'设计；构思'},
+ {en:'desire',ph:'/dɪˈzaɪər/',ps:'n.',zh:'渴望；欲望'},
+ {en:'despite',ph:'/dɪˈspaɪt/',ps:'prep.',zh:'尽管；不管'},
+ {en:'detail',ph:'/ˈdiːteɪl/',ps:'n.',zh:'细节；详情'},
+ {en:'determine',ph:'/dɪˈtɜːrmɪn/',ps:'v.',zh:'决定；确定'},
+ {en:'develop',ph:'/dɪˈveləp/',ps:'v.',zh:'发展；开发'},
+ {en:'device',ph:'/dɪˈvaɪs/',ps:'n.',zh:'设备；装置'},
+ {en:'discipline',ph:'/ˈdɪsəplɪn/',ps:'n.',zh:'纪律；学科'},
+ {en:'discover',ph:'/dɪˈskʌvər/',ps:'v.',zh:'发现；发觉'},
+ {en:'disease',ph:'/dɪˈziːz/',ps:'n.',zh:'疾病；弊病'},
+ {en:'display',ph:'/dɪˈspleɪ/',ps:'v.',zh:'展示；显示'},
+ {en:'distribute',ph:'/dɪˈstrɪbjuːt/',ps:'v.',zh:'分配；分布'},
+ {en:'domestic',ph:'/dəˈmestɪk/',ps:'adj.',zh:'国内的；家庭的'},
+],
+'列表八':[
+ {en:'economy',ph:'/ɪˈkɑːnəmi/',ps:'n.',zh:'经济；节约'},
+ {en:'educate',ph:'/ˈedʒukeɪt/',ps:'v.',zh:'教育；培养'},
+ {en:'effective',ph:'/ɪˈfektɪv/',ps:'adj.',zh:'有效的；实际的'},
+ {en:'efficient',ph:'/ɪˈfɪʃnt/',ps:'adj.',zh:'高效的；有效率的'},
+ {en:'element',ph:'/ˈelɪmənt/',ps:'n.',zh:'元素；要素'},
+ {en:'eliminate',ph:'/ɪˈlɪmɪneɪt/',ps:'v.',zh:'消除；淘汰'},
+ {en:'emerge',ph:'/ɪˈmɜːrdʒ/',ps:'v.',zh:'出现；浮现'},
+ {en:'emotion',ph:'/ɪˈmoʊʃn/',ps:'n.',zh:'情感；情绪'},
+ {en:'emphasis',ph:'/ˈemfəsɪs/',ps:'n.',zh:'强调；重点'},
+ {en:'employ',ph:'/ɪmˈplɔɪ/',ps:'v.',zh:'雇佣；使用'},
+ {en:'enable',ph:'/ɪˈneɪbl/',ps:'v.',zh:'使能够；启用'},
+ {en:'encounter',ph:'/ɪnˈkaʊntər/',ps:'v.',zh:'遭遇；遇到'},
+ {en:'encourage',ph:'/ɪnˈkɜːrɪdʒ/',ps:'v.',zh:'鼓励；激励'},
+ {en:'engage',ph:'/ɪnˈɡeɪdʒ/',ps:'v.',zh:'参与；吸引'},
+ {en:'enormous',ph:'/ɪˈnɔːrməs/',ps:'adj.',zh:'巨大的；庞大的'},
+ {en:'ensure',ph:'/ɪnˈʃʊr/',ps:'v.',zh:'确保；保证'},
+ {en:'enterprise',ph:'/ˈentərpraɪz/',ps:'n.',zh:'企业；事业'},
+ {en:'environment',ph:'/ɪnˈvaɪrənmənt/',ps:'n.',zh:'环境；周围'},
+ {en:'establish',ph:'/ɪˈstæblɪʃ/',ps:'v.',zh:'建立；确立'},
+ {en:'evaluate',ph:'/ɪˈvæljueɪt/',ps:'v.',zh:'评价；评估'},
+],
+}},
+'CET-6 核心词汇':{lists:{
+'列表一':[
+ {en:'abnormal',ph:'/æbˈnɔːrml/',ps:'adj.',zh:'不正常的；反常的'},
+ {en:'abolish',ph:'/əˈbɑːlɪʃ/',ps:'v.',zh:'废除；取消'},
+ {en:'absurd',ph:'/əbˈsɜːrd/',ps:'adj.',zh:'荒谬的；荒唐的'},
+ {en:'abuse',ph:'/əˈbjuːs/',ps:'n.',zh:'滥用；虐待'},
+ {en:'acquaint',ph:'/əˈkweɪnt/',ps:'v.',zh:'使熟悉；使认识'},
+ {en:'activate',ph:'/ˈæktɪveɪt/',ps:'v.',zh:'激活；使活动'},
+ {en:'acute',ph:'/əˈkjuːt/',ps:'adj.',zh:'敏锐的；急性的'},
+ {en:'adhere',ph:'/ədˈhɪr/',ps:'v.',zh:'坚持；依附'},
+ {en:'adolescent',ph:'/ˌædəˈlesnt/',ps:'n.',zh:'青少年'},
+ {en:'aggravate',ph:'/ˈæɡrəveɪt/',ps:'v.',zh:'加重；恶化'},
+ {en:'allege',ph:'/əˈledʒ/',ps:'v.',zh:'断言；宣称'},
+ {en:'alliance',ph:'/əˈlaɪəns/',ps:'n.',zh:'联盟；同盟'},
+ {en:'ambiguous',ph:'/æmˈbɪɡjuəs/',ps:'adj.',zh:'模糊的；含糊的'},
+ {en:'amend',ph:'/əˈmend/',ps:'v.',zh:'修改；修订'},
+ {en:'analogy',ph:'/əˈnælədʒi/',ps:'n.',zh:'相似；类比'},
+ {en:'anonymous',ph:'/əˈnɑːnɪməs/',ps:'adj.',zh:'匿名的'},
+ {en:'array',ph:'/əˈreɪ/',ps:'n.',zh:'阵列；一系列'},
+ {en:'articulate',ph:'/ɑːrˈtɪkjuleɪt/',ps:'v.',zh:'清晰表达'},
+ {en:'ascend',ph:'/əˈsend/',ps:'v.',zh:'上升；攀登'},
+ {en:'ascertain',ph:'/ˌæsərˈteɪn/',ps:'v.',zh:'查明；确定'},
+],
+'列表二':[
+ {en:'ascribe',ph:'/əˈskraɪb/',ps:'v.',zh:'把…归因于'},
+ {en:'assert',ph:'/əˈsɜːrt/',ps:'v.',zh:'断言；维护'},
+ {en:'authentic',ph:'/ɔːˈθentɪk/',ps:'adj.',zh:'可靠的；真实的'},
+ {en:'bewilder',ph:'/bɪˈwɪldər/',ps:'v.',zh:'迷惑；使糊涂'},
+ {en:'blunder',ph:'/ˈblʌndər/',ps:'n.',zh:'大错；失误'},
+ {en:'brisk',ph:'/brɪsk/',ps:'adj.',zh:'轻快的；活泼的'},
+ {en:'cater',ph:'/ˈkeɪtər/',ps:'v.',zh:'迎合；满足需求'},
+ {en:'cherish',ph:'/ˈtʃerɪʃ/',ps:'v.',zh:'珍爱；珍惜'},
+ {en:'chronic',ph:'/ˈkrɑːnɪk/',ps:'adj.',zh:'慢性的；长期的'},
+ {en:'circulation',ph:'/ˌsɜːrkjəˈleɪʃn/',ps:'n.',zh:'循环；发行量'},
+ {en:'coincide',ph:'/ˌkoʊɪnˈsaɪd/',ps:'v.',zh:'同时发生；相符'},
+ {en:'compact',ph:'/kəmˈpækt/',ps:'adj.',zh:'紧凑的；小巧的'},
+ {en:'compensation',ph:'/ˌkɑːmpenˈseɪʃn/',ps:'n.',zh:'补偿；赔偿'},
+ {en:'complement',ph:'/ˈkɑːmplɪment/',ps:'v.',zh:'补充；补足'},
+ {en:'comply',ph:'/kəmˈplaɪ/',ps:'v.',zh:'顺从；遵守'},
+ {en:'compulsory',ph:'/kəmˈpʌlsəri/',ps:'adj.',zh:'强制的；义务的'},
+ {en:'conceive',ph:'/kənˈsiːv/',ps:'v.',zh:'构想；设想'},
+ {en:'confidential',ph:'/ˌkɑːnfɪˈdenʃl/',ps:'adj.',zh:'机密的'},
+ {en:'conform',ph:'/kənˈfɔːrm/',ps:'v.',zh:'使一致；符合'},
+ {en:'consolidate',ph:'/kənˈsɑːlɪdeɪt/',ps:'v.',zh:'巩固；加强'},
+],
+'列表三':[
+ {en:'conspicuous',ph:'/kənˈspɪkjuəs/',ps:'adj.',zh:'引人注目的'},
+ {en:'controversy',ph:'/ˈkɑːntrəvɜːrsi/',ps:'n.',zh:'争论；辩论'},
+ {en:'crucial',ph:'/ˈkruːʃl/',ps:'adj.',zh:'关键的；重要的'},
+ {en:'decent',ph:'/ˈdiːsnt/',ps:'adj.',zh:'体面的；像样的'},
+ {en:'deceive',ph:'/dɪˈsiːv/',ps:'v.',zh:'欺骗；蒙蔽'},
+ {en:'delicate',ph:'/ˈdelɪkət/',ps:'adj.',zh:'精细的；微妙的'},
+ {en:'dilemma',ph:'/dɪˈlemə/',ps:'n.',zh:'困境；两难'},
+ {en:'disguise',ph:'/dɪsˈɡaɪz/',ps:'v.',zh:'伪装；假装'},
+ {en:'essence',ph:'/ˈesns/',ps:'n.',zh:'本质；精华'},
+ {en:'eternal',ph:'/ɪˈtɜːrnl/',ps:'adj.',zh:'永恒的；无休止的'},
+ {en:'exclusive',ph:'/ɪkˈskluːsɪv/',ps:'adj.',zh:'独有的；排他的'},
+ {en:'expire',ph:'/ɪkˈspaɪər/',ps:'v.',zh:'到期；熄灭'},
+ {en:'extinct',ph:'/ɪkˈstɪŋkt/',ps:'adj.',zh:'灭绝的；绝迹的'},
+ {en:'feasible',ph:'/ˈfiːzəbl/',ps:'adj.',zh:'可行的；可能的'},
+ {en:'feeble',ph:'/ˈfiːbl/',ps:'adj.',zh:'脆弱的；虚弱的'},
+ {en:'flaw',ph:'/flɔː/',ps:'n.',zh:'瑕疵；缺陷'},
+ {en:'gloomy',ph:'/ˈɡluːmi/',ps:'adj.',zh:'阴沉的；沮丧的'},
+ {en:'hospitality',ph:'/ˌhɑːspɪˈtæləti/',ps:'n.',zh:'好客；款待'},
+ {en:'illusion',ph:'/ɪˈluːʒn/',ps:'n.',zh:'错觉；幻想'},
+ {en:'ingredient',ph:'/ɪnˈɡriːdiənt/',ps:'n.',zh:'成分；原料'},
+],
+'列表四':[
+ {en:'initiate',ph:'/ɪˈnɪʃieɪt/',ps:'v.',zh:'开始；发起'},
+ {en:'integrity',ph:'/ɪnˈteɡrəti/',ps:'n.',zh:'正直；完整'},
+ {en:'intellectual',ph:'/ˌɪntəˈlektʃuəl/',ps:'adj.',zh:'智力的；知识的'},
+ {en:'intensive',ph:'/ɪnˈtensɪv/',ps:'adj.',zh:'密集的；强化的'},
+ {en:'interfere',ph:'/ˌɪntərˈfɪr/',ps:'v.',zh:'干涉；干扰'},
+ {en:'intricate',ph:'/ˈɪntrɪkət/',ps:'adj.',zh:'错综复杂的'},
+ {en:'intrinsic',ph:'/ɪnˈtrɪnsɪk/',ps:'adj.',zh:'固有的；内在的'},
+ {en:'irritate',ph:'/ˈɪrɪteɪt/',ps:'v.',zh:'激怒；刺激'},
+ {en:'jeopardize',ph:'/ˈdʒepərdaɪz/',ps:'v.',zh:'危害；危及'},
+ {en:'junction',ph:'/ˈdʒʌŋkʃn/',ps:'n.',zh:'交叉点；连接'},
+ {en:'justify',ph:'/ˈdʒʌstɪfaɪ/',ps:'v.',zh:'证明…正当'},
+ {en:'legend',ph:'/ˈledʒənd/',ps:'n.',zh:'传说；传奇'},
+ {en:'legitimate',ph:'/lɪˈdʒɪtɪmət/',ps:'adj.',zh:'合法的；正当的'},
+ {en:'liability',ph:'/ˌlaɪəˈbɪləti/',ps:'n.',zh:'责任；负债'},
+ {en:'literacy',ph:'/ˈlɪtərəsi/',ps:'n.',zh:'读写能力；文化'},
+ {en:'magnificent',ph:'/mæɡˈnɪfɪsnt/',ps:'adj.',zh:'壮丽的；华丽的'},
+ {en:'manifest',ph:'/ˈmænɪfest/',ps:'v.',zh:'表明；显现'},
+ {en:'manipulate',ph:'/məˈnɪpjuleɪt/',ps:'v.',zh:'操纵；控制'},
+ {en:'mechanism',ph:'/ˈmekənɪzəm/',ps:'n.',zh:'机制；原理'},
+ {en:'mediate',ph:'/ˈmiːdieɪt/',ps:'v.',zh:'调解；斡旋'},
+],
+'列表五':[
+ {en:'migrate',ph:'/ˈmaɪɡreɪt/',ps:'v.',zh:'迁移；移居'},
+ {en:'minimize',ph:'/ˈmɪnɪmaɪz/',ps:'v.',zh:'最小化；降到最低'},
+ {en:'mobilize',ph:'/ˈmoʊbəlaɪz/',ps:'v.',zh:'动员；调动'},
+ {en:'modify',ph:'/ˈmɑːdɪfaɪ/',ps:'v.',zh:'修改；调整'},
+ {en:'monopoly',ph:'/məˈnɑːpəli/',ps:'n.',zh:'垄断；独占'},
+ {en:'morality',ph:'/məˈræləti/',ps:'n.',zh:'道德；品行'},
+ {en:'navigate',ph:'/ˈnævɪɡeɪt/',ps:'v.',zh:'导航；航行'},
+ {en:'negotiate',ph:'/nɪˈɡoʊʃieɪt/',ps:'v.',zh:'谈判；协商'},
+ {en:'nurture',ph:'/ˈnɜːrtʃər/',ps:'v.',zh:'培养；养育'},
+ {en:'obligation',ph:'/ˌɑːblɪˈɡeɪʃn/',ps:'n.',zh:'义务；职责'},
+ {en:'opponent',ph:'/əˈpoʊnənt/',ps:'n.',zh:'对手；反对者'},
+ {en:'ornament',ph:'/ˈɔːrnəmənt/',ps:'n.',zh:'装饰品；点缀'},
+ {en:'overwhelm',ph:'/ˌoʊvərˈwelm/',ps:'v.',zh:'压倒；使不知所措'},
+ {en:'patent',ph:'/ˈpætnt/',ps:'n.',zh:'专利；专利权'},
+ {en:'patriotic',ph:'/ˌpeɪtriˈɑːtɪk/',ps:'adj.',zh:'爱国的'},
+ {en:'perpetual',ph:'/pərˈpetʃuəl/',ps:'adj.',zh:'永久的；持续的'},
+ {en:'perspective',ph:'/pərˈspektɪv/',ps:'n.',zh:'观点；视角'},
+ {en:'pessimistic',ph:'/ˌpesɪˈmɪstɪk/',ps:'adj.',zh:'悲观的'},
+ {en:'phenomenon',ph:'/fɪˈnɑːmɪnən/',ps:'n.',zh:'现象；奇迹'},
+ {en:'plausible',ph:'/ˈplɔːzəbl/',ps:'adj.',zh:'似乎合理的'},
+],
+'列表六':[
+ {en:'precaution',ph:'/prɪˈkɔːʃn/',ps:'n.',zh:'预防；警惕'},
+ {en:'predominant',ph:'/prɪˈdɑːmɪnənt/',ps:'adj.',zh:'主要的；主导的'},
+ {en:'preliminary',ph:'/prɪˈlɪmɪneri/',ps:'adj.',zh:'初步的；预备的'},
+ {en:'premise',ph:'/ˈpremɪs/',ps:'n.',zh:'前提；假定'},
+ {en:'prescribe',ph:'/prɪˈskraɪb/',ps:'v.',zh:'开药方；规定'},
+ {en:'preserve',ph:'/prɪˈzɜːrv/',ps:'v.',zh:'保存；保护'},
+ {en:'prestige',ph:'/preˈstiːʒ/',ps:'n.',zh:'声望；威望'},
+ {en:'priority',ph:'/praɪˈɔːrəti/',ps:'n.',zh:'优先；重点'},
+ {en:'profound',ph:'/prəˈfaʊnd/',ps:'adj.',zh:'深刻的；深远的'},
+ {en:'prolong',ph:'/prəˈlɔːŋ/',ps:'v.',zh:'延长；拖长'},
+ {en:'prominent',ph:'/ˈprɑːmɪnənt/',ps:'adj.',zh:'突出的；杰出的'},
+ {en:'prosperity',ph:'/prɑːˈsperəti/',ps:'n.',zh:'繁荣；兴旺'},
+ {en:'provoke',ph:'/prəˈvoʊk/',ps:'v.',zh:'激起；引发'},
+ {en:'pursuit',ph:'/pərˈsuːt/',ps:'n.',zh:'追求；追赶'},
+ {en:'reconcile',ph:'/ˈrekənsaɪl/',ps:'v.',zh:'调和；和解'},
+ {en:'rectify',ph:'/ˈrektɪfaɪ/',ps:'v.',zh:'纠正；改正'},
+ {en:'refrain',ph:'/rɪˈfreɪn/',ps:'v.',zh:'克制；避免'},
+ {en:'reproach',ph:'/rɪˈproʊtʃ/',ps:'v.',zh:'责备；指责'},
+ {en:'resemble',ph:'/rɪˈzembl/',ps:'v.',zh:'类似；像'},
+ {en:'retort',ph:'/rɪˈtɔːrt/',ps:'v.',zh:'反驳；回嘴'},
+],
+}},
+'雅思核心词汇':{lists:{
+'列表一':[
+ {en:'accommodate',ph:'/əˈkɑːmədeɪt/',ps:'v.',zh:'容纳；适应'},
+ {en:'adjacent',ph:'/əˈdʒeɪsnt/',ps:'adj.',zh:'邻近的；毗连的'},
+ {en:'advocate',ph:'/ˈædvəkeɪt/',ps:'v.',zh:'提倡；主张'},
+ {en:'aggregate',ph:'/ˈæɡrɪɡət/',ps:'n.',zh:'总计；集合体'},
+ {en:'annotate',ph:'/ˈænəteɪt/',ps:'v.',zh:'注释；评注'},
+ {en:'apparatus',ph:'/ˌæpəˈrætəs/',ps:'n.',zh:'设备；仪器'},
+ {en:'attribute',ph:'/əˈtrɪbjuːt/',ps:'v.',zh:'归因于；属性'},
+ {en:'bias',ph:'/ˈbaɪəs/',ps:'n.',zh:'偏见；偏好'},
+ {en:'bureaucracy',ph:'/bjʊˈrɑːkrəsi/',ps:'n.',zh:'官僚机构'},
+ {en:'coherent',ph:'/koʊˈhɪrənt/',ps:'adj.',zh:'连贯的；一致的'},
+ {en:'commodity',ph:'/kəˈmɑːdəti/',ps:'n.',zh:'商品；货物'},
+ {en:'contradict',ph:'/ˌkɑːntrəˈdɪkt/',ps:'v.',zh:'矛盾；反驳'},
+ {en:'criterion',ph:'/kraɪˈtɪriən/',ps:'n.',zh:'标准；准则'},
+ {en:'deteriorate',ph:'/dɪˈtɪriəreɪt/',ps:'v.',zh:'恶化；退化'},
+ {en:'discrepancy',ph:'/dɪsˈkrepənsi/',ps:'n.',zh:'差异；不一致'},
+ {en:'disseminate',ph:'/dɪˈsemɪneɪt/',ps:'v.',zh:'传播；散布'},
+ {en:'elicit',ph:'/ɪˈlɪsɪt/',ps:'v.',zh:'引出；探出'},
+ {en:'embrace',ph:'/ɪmˈbreɪs/',ps:'v.',zh:'拥抱；包含'},
+ {en:'endeavor',ph:'/ɪnˈdevər/',ps:'v.',zh:'努力；尽力'},
+ {en:'enhance',ph:'/ɪnˈhæns/',ps:'v.',zh:'提高；增强'},
+],
+'列表二':[
+ {en:'enormous',ph:'/ɪˈnɔːrməs/',ps:'adj.',zh:'巨大的；庞大的'},
+ {en:'entrepreneur',ph:'/ˌɑːntrəprəˈnɜːr/',ps:'n.',zh:'企业家'},
+ {en:'erode',ph:'/ɪˈroʊd/',ps:'v.',zh:'侵蚀；腐蚀'},
+ {en:'fluctuate',ph:'/ˈflʌktʃueɪt/',ps:'v.',zh:'波动；起伏'},
+ {en:'forthcoming',ph:'/ˈfɔːrθkʌmɪŋ/',ps:'adj.',zh:'即将到来的'},
+ {en:'hinder',ph:'/ˈhɪndər/',ps:'v.',zh:'阻碍；妨碍'},
+ {en:'hypothesis',ph:'/haɪˈpɑːθəsɪs/',ps:'n.',zh:'假设；假说'},
+ {en:'implement',ph:'/ˈɪmplɪment/',ps:'v.',zh:'实施；执行'},
+ {en:'incentive',ph:'/ɪnˈsentɪv/',ps:'n.',zh:'激励；动机'},
+ {en:'inevitable',ph:'/ɪnˈevɪtəbl/',ps:'adj.',zh:'不可避免的'},
+ {en:'infrastructure',ph:'/ˈɪnfrəstrʌktʃər/',ps:'n.',zh:'基础设施'},
+ {en:'innovation',ph:'/ˌɪnəˈveɪʃn/',ps:'n.',zh:'创新；革新'},
+ {en:'intervene',ph:'/ˌɪntərˈviːn/',ps:'v.',zh:'干预；介入'},
+ {en:'justify',ph:'/ˈdʒʌstɪfaɪ/',ps:'v.',zh:'证明…正当'},
+ {en:'legislation',ph:'/ˌledʒɪsˈleɪʃn/',ps:'n.',zh:'立法；法律'},
+ {en:'mechanism',ph:'/ˈmekənɪzəm/',ps:'n.',zh:'机制；原理'},
+ {en:'migrate',ph:'/ˈmaɪɡreɪt/',ps:'v.',zh:'迁移；移居'},
+ {en:'nevertheless',ph:'/ˌnevərðəˈles/',ps:'adv.',zh:'然而；不过'},
+ {en:'paradigm',ph:'/ˈpærədaɪm/',ps:'n.',zh:'范例；模式'},
+ {en:'preliminary',ph:'/prɪˈlɪmɪneri/',ps:'adj.',zh:'初步的'},
+],
+'列表三':[
+ {en:'protocol',ph:'/ˈproʊtəkɔːl/',ps:'n.',zh:'协议；礼仪'},
+ {en:'proximity',ph:'/prɑːkˈsɪməti/',ps:'n.',zh:'接近；邻近'},
+ {en:'rational',ph:'/ˈræʃnəl/',ps:'adj.',zh:'理性的；合理的'},
+ {en:'restore',ph:'/rɪˈstɔːr/',ps:'v.',zh:'恢复；修复'},
+ {en:'revenue',ph:'/ˈrevənuː/',ps:'n.',zh:'收入；税收'},
+ {en:'scenario',ph:'/səˈnærioʊ/',ps:'n.',zh:'情景；方案'},
+ {en:'subsidy',ph:'/ˈsʌbsədi/',ps:'n.',zh:'补贴；津贴'},
+ {en:'sustain',ph:'/səˈsteɪn/',ps:'v.',zh:'维持；支撑'},
+ {en:'trigger',ph:'/ˈtrɪɡər/',ps:'v.',zh:'触发；引起'},
+ {en:'undermine',ph:'/ˌʌndərˈmaɪn/',ps:'v.',zh:'削弱；破坏'},
+ {en:'underlying',ph:'/ˌʌndərˈlaɪɪŋ/',ps:'adj.',zh:'潜在的；根本的'},
+ {en:'unprecedented',ph:'/ʌnˈpresɪdentɪd/',ps:'adj.',zh:'史无前例的'},
+ {en:'utilize',ph:'/ˈjuːtəlaɪz/',ps:'v.',zh:'利用；使用'},
+ {en:'validity',ph:'/vəˈlɪdəti/',ps:'n.',zh:'有效性；合法性'},
+ {en:'vulnerable',ph:'/ˈvʌlnərəbl/',ps:'adj.',zh:'脆弱的；易受伤的'},
+ {en:'warrant',ph:'/ˈwɔːrənt/',ps:'v.',zh:'保证；授权'},
+ {en:'whereby',ph:'/werˈbaɪ/',ps:'adv.',zh:'凭借；通过'},
+ {en:'widespread',ph:'/ˈwaɪdspred/',ps:'adj.',zh:'广泛的；普遍的'},
+ {en:'worthwhile',ph:'/ˌwɜːrθˈwaɪl/',ps:'adj.',zh:'值得的'},
+ {en:'yield',ph:'/jiːld/',ps:'v.',zh:'产出；屈服'},
+],
+}},
+'托福高频词汇':{lists:{
+'列表一':[
+ {en:'abate',ph:'/əˈbeɪt/',ps:'v.',zh:'减轻；减少'},
+ {en:'aberration',ph:'/ˌæbəˈreɪʃn/',ps:'n.',zh:'异常；偏差'},
+ {en:'abstain',ph:'/əbˈsteɪn/',ps:'v.',zh:'戒绝；弃权'},
+ {en:'adversity',ph:'/ədˈvɜːrsəti/',ps:'n.',zh:'逆境；不幸'},
+ {en:'aesthetic',ph:'/esˈθetɪk/',ps:'adj.',zh:'美学的；审美的'},
+ {en:'alleviate',ph:'/əˈliːvieɪt/',ps:'v.',zh:'减轻；缓和'},
+ {en:'ameliorate',ph:'/əˈmiːliəreɪt/',ps:'v.',zh:'改善；改良'},
+ {en:'analogous',ph:'/əˈnæləɡəs/',ps:'adj.',zh:'类似的'},
+ {en:'anecdote',ph:'/ˈænɪkdoʊt/',ps:'n.',zh:'轶事；趣闻'},
+ {en:'animosity',ph:'/ˌænɪˈmɑːsəti/',ps:'n.',zh:'敌意；仇恨'},
+ {en:'anomaly',ph:'/əˈnɑːməli/',ps:'n.',zh:'异常；反常'},
+ {en:'antagonize',ph:'/ænˈtæɡənaɪz/',ps:'v.',zh:'对抗；敌对'},
+ {en:'antiquated',ph:'/ˈæntɪkweɪtɪd/',ps:'adj.',zh:'过时的'},
+ {en:'apathetic',ph:'/ˌæpəˈθetɪk/',ps:'adj.',zh:'冷漠的'},
+ {en:'arduous',ph:'/ˈɑːrdʒuəs/',ps:'adj.',zh:'艰巨的；费力的'},
+ {en:'assimilate',ph:'/əˈsɪməleɪt/',ps:'v.',zh:'吸收；同化'},
+ {en:'astute',ph:'/əˈstuːt/',ps:'adj.',zh:'敏锐的；精明的'},
+ {en:'audacious',ph:'/ɔːˈdeɪʃəs/',ps:'adj.',zh:'大胆的；无畏的'},
+ {en:'augment',ph:'/ɔːɡˈment/',ps:'v.',zh:'增加；扩大'},
+ {en:'austere',ph:'/ɔːˈstɪr/',ps:'adj.',zh:'简朴的；严厉的'},
+],
+'列表二':[
+ {en:'benevolent',ph:'/bəˈnevələnt/',ps:'adj.',zh:'仁慈的'},
+ {en:'bolster',ph:'/ˈboʊlstər/',ps:'v.',zh:'支持；加强'},
+ {en:'brevity',ph:'/ˈbrevəti/',ps:'n.',zh:'简短；简洁'},
+ {en:'candid',ph:'/ˈkændɪd/',ps:'adj.',zh:'坦率的；公正的'},
+ {en:'coerce',ph:'/koʊˈɜːrs/',ps:'v.',zh:'强迫；强制'},
+ {en:'cognizant',ph:'/ˈkɑːɡnɪzənt/',ps:'adj.',zh:'知晓的'},
+ {en:'commensurate',ph:'/kəˈmenʃərət/',ps:'adj.',zh:'相称的'},
+ {en:'complacent',ph:'/kəmˈpleɪsnt/',ps:'adj.',zh:'自满的'},
+ {en:'concur',ph:'/kənˈkɜːr/',ps:'v.',zh:'同意；同时发生'},
+ {en:'conundrum',ph:'/kəˈnʌndrəm/',ps:'n.',zh:'难题；谜题'},
+ {en:'corroborate',ph:'/kəˈrɑːbəreɪt/',ps:'v.',zh:'证实；确证'},
+ {en:'cryptic',ph:'/ˈkrɪptɪk/',ps:'adj.',zh:'神秘的；隐晦的'},
+ {en:'debilitate',ph:'/dɪˈbɪlɪteɪt/',ps:'v.',zh:'使衰弱'},
+ {en:'delineate',ph:'/dɪˈlɪnieɪt/',ps:'v.',zh:'描绘；描述'},
+ {en:'dichotomy',ph:'/daɪˈkɑːtəmi/',ps:'n.',zh:'二分法；分裂'},
+ {en:'elucidate',ph:'/ɪˈluːsɪdeɪt/',ps:'v.',zh:'阐明；解释'},
+ {en:'empirical',ph:'/ɪmˈpɪrɪkl/',ps:'adj.',zh:'经验主义的'},
+ {en:'ephemeral',ph:'/ɪˈfemərəl/',ps:'adj.',zh:'短暂的'},
+ {en:'equivocal',ph:'/ɪˈkwɪvəkl/',ps:'adj.',zh:'模棱两可的'},
+ {en:'erudite',ph:'/ˈerudaɪt/',ps:'adj.',zh:'博学的'},
+],
+'列表三':[
+ {en:'exacerbate',ph:'/ɪɡˈzæsərbeɪt/',ps:'v.',zh:'加剧；恶化'},
+ {en:'facetious',ph:'/fəˈsiːʃəs/',ps:'adj.',zh:'滑稽的；轻浮的'},
+ {en:'germinate',ph:'/ˈdʒɜːrmɪneɪt/',ps:'v.',zh:'发芽；萌芽'},
+ {en:'hierarchy',ph:'/ˈhaɪərɑːrki/',ps:'n.',zh:'等级制度'},
+ {en:'iconoclast',ph:'/aɪˈkɑːnəklæst/',ps:'n.',zh:'打破传统者'},
+ {en:'impetus',ph:'/ˈɪmpɪtəs/',ps:'n.',zh:'动力；推动力'},
+ {en:'juxtapose',ph:'/ˈdʒʌkstəpoʊz/',ps:'v.',zh:'并列；对比'},
+ {en:'meticulous',ph:'/məˈtɪkjələs/',ps:'adj.',zh:'一丝不苟的'},
+ {en:'nebulous',ph:'/ˈnebjələs/',ps:'adj.',zh:'模糊的；星云的'},
+ {en:'nostalgia',ph:'/nɑːˈstældʒə/',ps:'n.',zh:'怀旧；乡愁'},
+ {en:'obsolete',ph:'/ˌɑːbsəˈliːt/',ps:'adj.',zh:'过时的；废弃的'},
+ {en:'ominous',ph:'/ˈɑːmɪnəs/',ps:'adj.',zh:'不祥的；预兆的'},
+ {en:'paradox',ph:'/ˈpærədɑːks/',ps:'n.',zh:'悖论；矛盾'},
+ {en:'pervasive',ph:'/pərˈveɪsɪv/',ps:'adj.',zh:'普遍的；遍布的'},
+ {en:'placid',ph:'/ˈplæsɪd/',ps:'adj.',zh:'平静的；温和的'},
+ {en:'pragmatic',ph:'/præɡˈmætɪk/',ps:'adj.',zh:'务实的；实用的'},
+ {en:'prevalent',ph:'/ˈprevələnt/',ps:'adj.',zh:'流行的；普遍的'},
+ {en:'prolific',ph:'/prəˈlɪfɪk/',ps:'adj.',zh:'多产的；丰富的'},
+ {en:'resilient',ph:'/rɪˈzɪliənt/',ps:'adj.',zh:'有弹性的；适应力强的'},
+ {en:'scrutiny',ph:'/ˈskruːtəni/',ps:'n.',zh:'仔细审查； scrutiny'},
+],
+}},
+'考研红宝书':{lists:{
+'列表一':[
+ {en:'abolish',ph:'/əˈbɑːlɪʃ/',ps:'v.',zh:'废除；取消'},
+ {en:'absurd',ph:'/əbˈsɜːrd/',ps:'adj.',zh:'荒谬的'},
+ {en:'acquaint',ph:'/əˈkweɪnt/',ps:'v.',zh:'使熟悉'},
+ {en:'adhere',ph:'/ədˈhɪr/',ps:'v.',zh:'坚持；遵守'},
+ {en:'aggravate',ph:'/ˈæɡrəveɪt/',ps:'v.',zh:'加重；恶化'},
+ {en:'allege',ph:'/əˈledʒ/',ps:'v.',zh:'声称；指控'},
+ {en:'alliance',ph:'/əˈlaɪəns/',ps:'n.',zh:'联盟；同盟'},
+ {en:'amend',ph:'/əˈmend/',ps:'v.',zh:'修改；修订'},
+ {en:'applaud',ph:'/əˈplɔːd/',ps:'v.',zh:'鼓掌；称赞'},
+ {en:'ascertain',ph:'/ˌæsərˈteɪn/',ps:'v.',zh:'查明；确定'},
+ {en:'auspicious',ph:'/ɔːˈspɪʃəs/',ps:'adj.',zh:'吉利的'},
+ {en:'barren',ph:'/ˈbærən/',ps:'adj.',zh:'贫瘠的；不育的'},
+ {en:'beforehand',ph:'/bɪˈfɔːrhænd/',ps:'adv.',zh:'预先；事先'},
+ {en:'bewilder',ph:'/bɪˈwɪldər/',ps:'v.',zh:'使困惑'},
+ {en:'brittle',ph:'/ˈbrɪtl/',ps:'adj.',zh:'易碎的；脆弱的'},
+ {en:'cater',ph:'/ˈkeɪtər/',ps:'v.',zh:'迎合；满足需求'},
+ {en:'chronic',ph:'/ˈkrɑːnɪk/',ps:'adj.',zh:'慢性的；长期的'},
+ {en:'clash',ph:'/klæʃ/',ps:'v.',zh:'冲突；碰撞'},
+ {en:'coincide',ph:'/ˌkoʊɪnˈsaɪd/',ps:'v.',zh:'同时发生；相符'},
+ {en:'commence',ph:'/kəˈmens/',ps:'v.',zh:'开始；着手'},
+],
+'列表二':[
+ {en:'comply',ph:'/kəmˈplaɪ/',ps:'v.',zh:'顺从；遵守'},
+ {en:'conceive',ph:'/kənˈsiːv/',ps:'v.',zh:'构想；设想'},
+ {en:'consolidate',ph:'/kənˈsɑːlɪdeɪt/',ps:'v.',zh:'巩固；加强'},
+ {en:'contemplate',ph:'/ˈkɑːntəmpleɪt/',ps:'v.',zh:'沉思；考虑'},
+ {en:'deceive',ph:'/dɪˈsiːv/',ps:'v.',zh:'欺骗'},
+ {en:'dedicate',ph:'/ˈdedɪkeɪt/',ps:'v.',zh:'奉献；致力于'},
+ {en:'defy',ph:'/dɪˈfaɪ/',ps:'v.',zh:'违抗；藐视'},
+ {en:'deprive',ph:'/dɪˈpraɪv/',ps:'v.',zh:'剥夺；使丧失'},
+ {en:'deteriorate',ph:'/dɪˈtɪriəreɪt/',ps:'v.',zh:'恶化；退化'},
+ {en:'dilemma',ph:'/dɪˈlemə/',ps:'n.',zh:'困境；两难'},
+ {en:'diminish',ph:'/dɪˈmɪnɪʃ/',ps:'v.',zh:'减少；缩小'},
+ {en:'discriminate',ph:'/dɪˈskrɪmɪneɪt/',ps:'v.',zh:'歧视；区分'},
+ {en:'disperse',ph:'/dɪˈspɜːrs/',ps:'v.',zh:'分散；散开'},
+ {en:'displace',ph:'/dɪsˈpleɪs/',ps:'v.',zh:'取代；移位'},
+ {en:'disregard',ph:'/ˌdɪsrɪˈɡɑːrd/',ps:'v.',zh:'忽视；不顾'},
+ {en:'distort',ph:'/dɪˈstɔːrt/',ps:'v.',zh:'扭曲；歪曲'},
+ {en:'elicit',ph:'/ɪˈlɪsɪt/',ps:'v.',zh:'引出；探出'},
+ {en:'endeavor',ph:'/ɪnˈdevər/',ps:'v.',zh:'努力；尽力'},
+ {en:'enhance',ph:'/ɪnˈhæns/',ps:'v.',zh:'提高；增强'},
+ {en:'entrepreneur',ph:'/ˌɑːntrəprəˈnɜːr/',ps:'n.',zh:'企业家'},
+],
+'列表三':[
+ {en:'erode',ph:'/ɪˈroʊd/',ps:'v.',zh:'侵蚀；腐蚀'},
+ {en:'evoke',ph:'/ɪˈvoʊk/',ps:'v.',zh:'唤起；引起'},
+ {en:'exempt',ph:'/ɪɡˈzempt/',ps:'v.',zh:'免除；豁免'},
+ {en:'expire',ph:'/ɪkˈspaɪər/',ps:'v.',zh:'到期；熄灭'},
+ {en:'fabricate',ph:'/ˈfæbrɪkeɪt/',ps:'v.',zh:'制造；捏造'},
+ {en:'fluctuate',ph:'/ˈflʌktʃueɪt/',ps:'v.',zh:'波动；起伏'},
+ {en:'hinder',ph:'/ˈhɪndər/',ps:'v.',zh:'阻碍；妨碍'},
+ {en:'illuminate',ph:'/ɪˈluːmɪneɪt/',ps:'v.',zh:'照亮；阐明'},
+ {en:'impair',ph:'/ɪmˈper/',ps:'v.',zh:'损害；削弱'},
+ {en:'incentive',ph:'/ɪnˈsentɪv/',ps:'n.',zh:'激励；动机'},
+ {en:'indignant',ph:'/ɪnˈdɪɡnənt/',ps:'adj.',zh:'愤慨的；愤怒的'},
+ {en:'ingenious',ph:'/ɪnˈdʒiːniəs/',ps:'adj.',zh:'巧妙的；有创造力的'},
+ {en:'integrity',ph:'/ɪnˈteɡrəti/',ps:'n.',zh:'正直；完整'},
+ {en:'intervene',ph:'/ˌɪntərˈviːn/',ps:'v.',zh:'干预；介入'},
+ {en:'intricate',ph:'/ˈɪntrɪkət/',ps:'adj.',zh:'错综复杂的'},
+ {en:'irritate',ph:'/ˈɪrɪteɪt/',ps:'v.',zh:'激怒；使烦躁'},
+ {en:'jeopardize',ph:'/ˈdʒepərdaɪz/',ps:'v.',zh:'危害；危及'},
+ {en:'legitimate',ph:'/lɪˈdʒɪtɪmət/',ps:'adj.',zh:'合法的；正当的'},
+ {en:'manifest',ph:'/ˈmænɪfest/',ps:'v.',zh:'表明；显现'},
+ {en:'mediate',ph:'/ˈmiːdieɪt/',ps:'v.',zh:'调解；斡旋'},
+],
+}},
+'GRE 核心词汇':{lists:{
+'列表一':[
+ {en:'acrimony',ph:'/ˈækrɪmoʊni/',ps:'n.',zh:'尖刻；刻薄'},
+ {en:'alacrity',ph:'/əˈlækrəti/',ps:'n.',zh:'欣然；敏捷'},
+ {en:'anathema',ph:'/əˈnæθəmə/',ps:'n.',zh:'诅咒；令人厌恶的事物'},
+ {en:'antediluvian',ph:'/ˌæntidɪˈluːviən/',ps:'adj.',zh:'古老的'},
+ {en:'apotheosis',ph:'/əˌpɑːθiˈoʊsɪs/',ps:'n.',zh:'典范；神化'},
+ {en:'approbation',ph:'/ˌæprəˈbeɪʃn/',ps:'n.',zh:'赞许；认可'},
+ {en:'bellicose',ph:'/ˈbelɪkoʊs/',ps:'adj.',zh:'好战的'},
+ {en:'cacophony',ph:'/kəˈkɑːfəni/',ps:'n.',zh:'刺耳的声音'},
+ {en:'capricious',ph:'/kəˈprɪʃəs/',ps:'adj.',zh:'反复无常的'},
+ {en:'chicanery',ph:'/ʃɪˈkeɪnəri/',ps:'n.',zh:'诡计；欺骗'},
+ {en:'circumlocution',ph:'/ˌsɜːrkəmloʊˈkjuːʃn/',ps:'n.',zh:'迂回说法'},
+ {en:'complaisant',ph:'/kəmˈpleɪzənt/',ps:'adj.',zh:'殷勤的'},
+ {en:'contumacious',ph:'/ˌkɑːntjuːˈmeɪʃəs/',ps:'adj.',zh:'不驯的'},
+ {en:'defenestrate',ph:'/diːˈfenɪstreɪt/',ps:'v.',zh:'将…抛出窗外'},
+ {en:'denouement',ph:'/ˌdeɪnuːˈmɑ̃ː/',ps:'n.',zh:'结局；收场'},
+ {en:'diaphanous',ph:'/daɪˈæfənəs/',ps:'adj.',zh:'透明的'},
+ {en:'ebullient',ph:'/ɪˈbʌliənt/',ps:'adj.',zh:'热情洋溢的'},
+ {en:'enervate',ph:'/ˈenərveɪt/',ps:'v.',zh:'使衰弱'},
+ {en:'equanimity',ph:'/ˌekwəˈnɪməti/',ps:'n.',zh:'镇定；平静'},
+ {en:'execrable',ph:'/ˈeksɪkrəbl/',ps:'adj.',zh:'极坏的'},
+],
+'列表二':[
+ {en:'fatuous',ph:'/ˈfætʃuəs/',ps:'adj.',zh:'愚蠢的'},
+ {en:'garrulous',ph:'/ˈɡærələs/',ps:'adj.',zh:'唠叨的'},
+ {en:'grandiloquent',ph:'/ɡrænˈdɪləkwənt/',ps:'adj.',zh:'夸张的'},
+ {en:'halcyon',ph:'/ˈhælsiən/',ps:'adj.',zh:'平静的；祥和的'},
+ {en:'hegemony',ph:'/hɪˈdʒeməni/',ps:'n.',zh:'霸权；领导权'},
+ {en:'ignominious',ph:'/ˌɪɡnəˈmɪniəs/',ps:'adj.',zh:'耻辱的'},
+ {en:'impecunious',ph:'/ˌɪmpɪˈkjuːniəs/',ps:'adj.',zh:'贫穷的'},
+ {en:'inchoate',ph:'/ɪnˈkoʊət/',ps:'adj.',zh:'初期的'},
+ {en:'laconic',ph:'/ləˈkɑːnɪk/',ps:'adj.',zh:'简洁的'},
+ {en:'magnanimous',ph:'/mæɡˈnænɪməs/',ps:'adj.',zh:'宽宏大量的'},
+ {en:'mendacious',ph:'/menˈdeɪʃəs/',ps:'adj.',zh:'虚假的；说谎的'},
+ {en:'nefarious',ph:'/nɪˈferiəs/',ps:'adj.',zh:'邪恶的'},
+ {en:'obfuscate',ph:'/ˈɑːbfʌskeɪt/',ps:'v.',zh:'使模糊；混淆'},
+ {en:'obstreperous',ph:'/əbˈstrepərəs/',ps:'adj.',zh:'喧嚣的'},
+ {en:'peccadillo',ph:'/ˌpekəˈdɪloʊ/',ps:'n.',zh:'轻罪；小过失'},
+ {en:'perfunctory',ph:'/pərˈfʌŋktəri/',ps:'adj.',zh:'敷衍的'},
+ {en:'perspicacious',ph:'/ˌpɜːrspɪˈkeɪʃəs/',ps:'adj.',zh:'敏锐的'},
+ {en:'phlegmatic',ph:'/fleɡˈmætɪk/',ps:'adj.',zh:'冷静的'},
+ {en:'profligate',ph:'/ˈprɑːflɪɡət/',ps:'adj.',zh:'挥霍的'},
+ {en:'propitious',ph:'/prəˈpɪʃəs/',ps:'adj.',zh:'吉利的'},
+],
+'列表三':[
+ {en:'pugnacious',ph:'/pʌɡˈneɪʃəs/',ps:'adj.',zh:'好斗的'},
+ {en:'quixotic',ph:'/kwɪkˈsɑːtɪk/',ps:'adj.',zh:'不切实际的'},
+ {en:'recalcitrant',ph:'/rɪˈkælsɪtrənt/',ps:'adj.',zh:'顽抗的'},
+ {en:'sanguine',ph:'/ˈsæŋɡwɪn/',ps:'adj.',zh:'乐观的'},
+ {en:'sycophant',ph:'/ˈsɪkəfænt/',ps:'n.',zh:'谄媚者'},
+ {en:'taciturn',ph:'/ˈtæsɪtɜːrn/',ps:'adj.',zh:'沉默寡言的'},
+ {en:'tenacious',ph:'/təˈneɪʃəs/',ps:'adj.',zh:'顽强的'},
+ {en:'ubiquitous',ph:'/juːˈbɪkwɪtəs/',ps:'adj.',zh:'无处不在的'},
+ {en:'vacillate',ph:'/ˈvæsəleɪt/',ps:'v.',zh:'摇摆不定'},
+ {en:'vociferous',ph:'/voʊˈsɪfərəs/',ps:'adj.',zh:'大声疾呼的'},
+ {en:'abjure',ph:'/əbˈdʒʊr/',ps:'v.',zh:'发誓放弃；公开放弃'},
+ {en:'ameliorate',ph:'/əˈmiːliəreɪt/',ps:'v.',zh:'改善；改良'},
+ {en:'conflagration',ph:'/ˌkɑːnfləˈɡreɪʃn/',ps:'n.',zh:'大火；冲突'},
+ {en:'demagogue',ph:'/ˈdeməɡɑːɡ/',ps:'n.',zh:'煽动家'},
+ {en:'emollient',ph:'/ɪˈmɑːliənt/',ps:'adj.',zh:'缓和的；润肤的'},
+ {en:'fastidious',ph:'/fæˈstɪdiəs/',ps:'adj.',zh:'挑剔的；讲究的'},
+ {en:'gainsay',ph:'/ˌɡeɪnˈseɪ/',ps:'v.',zh:'否认；反驳'},
+ {en:'hubris',ph:'/ˈhjuːbrɪs/',ps:'n.',zh:'傲慢；狂妄'},
+ {en:'inimical',ph:'/ɪˈnɪmɪkl/',ps:'adj.',zh:'敌意的；有害的'},
+ {en:'loquacious',ph:'/ləˈkweɪʃəs/',ps:'adj.',zh:'多嘴的；饶舌的'},
+],
+}},
+};
+}
+
+// Re-chunk large lists into ~80-word chunks as "列表1", "列表2", etc.
+(function(){
+    var CHUNK = 80;
+    for(var bn in V){
+        var book = V[bn];
+        if(!book||!book.lists) continue;
+        var all = [];
+        for(var ln in book.lists){ all = all.concat(book.lists[ln]); }
+        if(all.length === 0) continue;
+        var nl = {};
+        for(var i=0, cn=1; i<all.length; i+=CHUNK, cn++){
+            nl['列表'+cn] = all.slice(i, i+CHUNK);
+        }
+        book.lists = nl;
+    }
+})();
+
+// ═══════════════ FAVORITES ═══════════════
+const FK='brat-vocab-favs';
+function lF(){ try{return JSON.parse(localStorage.getItem(FK))||[];}catch{return[];} }
+function sF(f){ localStorage.setItem(FK,JSON.stringify(f)); }
+function iF(w){ return lF().some(f=>f.en===w.en); }
+function tF(w,bk,ls){
+    const f=lF(); const i=f.findIndex(x=>x.en===w.en);
+    if(i>=0) f.splice(i,1); else f.push({...w,_book:bk||'',_list:ls||''});
+    sF(f); return i<0;
+}
+
+// ═══════════════ CUSTOM BOOKS ═══════════════
+const CBK='brat-vocab-custom';
+function lCB(){ try{return JSON.parse(localStorage.getItem(CBK))||{};}catch{return{};} }
+function sCB(d){ localStorage.setItem(CBK,JSON.stringify(d)); }
+function mVB(){ const r={}; Object.entries(V).forEach(([n,d])=>{r[n]=JSON.parse(JSON.stringify(d));}); Object.entries(lCB()).forEach(([n,d])=>{r['📒 '+n]=JSON.parse(JSON.stringify(d));}); return r; }
+function iCB(n){ return n.startsWith('📒 '); }
+function cBN(n){ return iCB(n)?n.slice(3):n; }
+
+// custom books page
+function sCBP(){
+    const cb=lCB(); const ns=Object.keys(cb);
+    cbC.innerHTML='';
+    if(ns.length===0){ cbC.innerHTML='<div class="custom-empty">还没有自定义词汇书</div>'; }
+    else { ns.forEach(n=>{ const wc=Object.values(cb[n].lists).reduce((s,l)=>s+l.length,0);
+        const d=document.createElement('div'); d.className='custom-item';
+        const l=document.createElement('span'); l.className='ci-label'; l.textContent=n+' · '+wc+'词'; d.appendChild(l);
+        const del=document.createElement('button'); del.className='ci-del'; del.textContent='×';
+        del.addEventListener('click',e=>{ e.stopPropagation(); if(confirm('删除词汇书 "'+n+'"？')){ const cb2=lCB(); delete cb2[n]; sCB(cb2); sCBP(); rH(); } });
+        d.appendChild(del);
+        d.addEventListener('click',()=>sCBL(n)); cbC.appendChild(d);
+    });}
+    go(cbP);
+}
+function sCBL(bn){
+    const cb=lCB(); if(!cb[bn]) return;
+    $('custom-lists-title').textContent=bn;
+    clC.innerHTML=''; const ls=Object.keys(cb[bn].lists);
+    if(ls.length===0){ clC.innerHTML='<div class="custom-empty">还没有列表</div>'; }
+    else { ls.forEach(n=>{ const wc=cb[bn].lists[n].length;
+        const d=document.createElement('div'); d.className='custom-item';
+        const l=document.createElement('span'); l.className='ci-label'; l.textContent=n+' · '+wc+'词'; d.appendChild(l);
+        const del=document.createElement('button'); del.className='ci-del'; del.textContent='×';
+        del.addEventListener('click',e=>{ e.stopPropagation(); if(confirm('删除列表 "'+n+'"？')){ delete cb[bn].lists[n]; sCB(cb); sCBL(bn); } });
+        d.appendChild(del);
+        d.addEventListener('click',()=>sCWL(bn,n)); clC.appendChild(d);
+    });}
+    $('custom-create-list-btn').onclick=()=>{
+        const nm=prompt('新列表名称（如：列表一）：'); if(!nm||!nm.trim()) return;
+        if(cb[bn].lists[nm.trim()]){ alert('列表已存在'); return; }
+        cb[bn].lists[nm.trim()]=[]; sCB(cb); sCBL(bn);
+    };
+    go(clP);
+}
+function sCWL(bn,ln){
+    const cb=lCB(); if(!cb[bn]||!cb[bn].lists[ln]) return;
+    const ws=cb[bn].lists[ln]; const f=lF();
+    $('custom-wordlist-title').textContent=bn+' / '+ln;
+    $('custom-wordlist-count').textContent=ws.length+' 词';
+    cwR.innerHTML='';
+    ws.forEach((w,i)=>{
+        const fd=f.some(x=>x.en===w.en);
+        const r=document.createElement('div'); r.className='word-row';
+        const enSpan=document.createElement('span'); enSpan.className='row-en'; enSpan.textContent=w.en.toLowerCase();
+        const zhSpan=document.createElement('span'); zhSpan.className='row-zh'; zhSpan.textContent=(w.ps||'')+' '+(w.zh||'');
+        const acts=document.createElement('span'); acts.className='row-actions';
+        const favBtn=document.createElement('button'); favBtn.className='row-fav'+(fd?' faved':''); favBtn.textContent='★';
+        favBtn.addEventListener('click',e=>{ e.stopPropagation(); const nw=tF(w,bn,ln); favBtn.classList.toggle('faved',nw); rFM(); rH(); });
+        const delBtn=document.createElement('button'); delBtn.className='row-del'; delBtn.textContent='×';
+        delBtn.addEventListener('click',e=>{ e.stopPropagation(); ws.splice(i,1); sCB(cb); sCWL(bn,ln); rH(); });
+        acts.appendChild(favBtn); acts.appendChild(delBtn);
+        r.appendChild(enSpan); r.appendChild(zhSpan); r.appendChild(acts);
+        r.addEventListener('click',()=>sL([...ws],i,bn,ln));
+        cwR.appendChild(r);
+    });
+    $('custom-wordlist-start-btn').onclick=()=>sL([...ws],0,bn,ln);
+    $('custom-add-word-btn').style.display='';
+    $('custom-add-word-form').style.display='none';
+    go(cwP);
+}
+
+// update book selection to include custom books
+function sBS(){
+    bC.innerHTML=''; const av=mVB();
+    Object.entries(av).forEach(([n,d])=>{
+        const t=Object.values(d.lists).reduce((s,l)=>s+l.length,0);
+        const b=document.createElement('button'); b.className='list-item';
+        b.innerHTML=n+'<span class="extra">'+t+' 词</span>';
+        b.addEventListener('click',()=>sBk(n)); bC.appendChild(b);
+    });
+    go(bP);
+}
+function sBk(bk){ cB=bk; const av=mVB(); const ns=Object.keys(av[bk].lists);
+    if(ns.length===1){ sWL(bk,ns[0]); return; }
+    $('list-page-title').textContent=bk; $('list-container').innerHTML='';
+    ns.forEach(n=>{ const wc=av[bk].lists[n].length;
+        const b=document.createElement('button'); b.className='list-item';
+        b.innerHTML=n+'<span class="extra">'+wc+' 词</span>';
+        b.addEventListener('click',()=>sWL(bk,n)); $('list-container').appendChild(b);
+    });
+    go(lP);
+}
+function sWL(bk,ls){ cB=bk; cL=ls; const av=mVB(); const ws=av[bk].lists[ls]; const f=lF();
+    $('wordlist-title').textContent=bk+' / '+ls;
+    $('wordlist-count').textContent=ws.length+' 词'; $('word-rows').innerHTML='';
+    ws.forEach((w,i)=>{
+        const fd=f.some(x=>x.en===w.en);
+        const r=document.createElement('div'); r.className='word-row';
+        const favBtn=document.createElement('button'); favBtn.className='row-fav'+(fd?' faved':''); favBtn.textContent='★';
+        favBtn.addEventListener('click',e=>{ e.stopPropagation(); const nw=tF(w,bk,ls); favBtn.classList.toggle('faved',nw); rFM(); rH(); });
+        r.innerHTML='<span class="row-en">'+w.en.toLowerCase()+'</span><span class="row-zh">'+w.ps+' '+w.zh+'</span>';
+        r.appendChild(favBtn);
+        r.addEventListener('click',()=>sL([...ws],i,bk,ls)); $('word-rows').appendChild(r);
+    });
+    $('wordlist-start-btn').onclick=()=>sL([...ws],0,bk,ls); go(wP);
+}
+function goBackFromLearning(){
+    if(cB&&iCB(cB)){ sCWL(cBN(cB),cL); }
+    else if(cB&&cL){ sWL(cB,cL); }
+    else { sFv(); }
+}
+
+// ═══════════════ SPACED REPETITION ═══════════════
+function bQ(w){ return w.map((x,i)=>({word:x,level:-1,seen:0,due:i})); }
+function gND(q){
+    let b=null,bi=-1;
+    for(let i=0;i<q.length;i++){ if(q[i].level===2) continue; if(b===null||q[i].due<b.due){b=q[i];bi=i;} }
+    return {item:b,index:bi};
+}
+function aR(q,i,r){
+    const it=q[i]; it.level=r; it.seen++;
+    if(r===2){ it.due=Infinity; }
+    else {
+        const mx=q.reduce((m,x)=>(x.level!==2&&x.due>m&&x!==it?x.due:m),0);
+        it.due=mx+(r===0?2+Math.floor(Math.random()*3):6+Math.floor(Math.random()*5));
+    }
+    q.forEach(x=>{ if(x.level!==2&&x.due>0&&x.due<Infinity) x.due--; });
+}
+function cR(q){ return q.filter(x=>x.level!==2).length; }
+function iD(q){ return cR(q)===0; }
+
+// ═══════════════ STATE ═══════════════
+let cB=null, cL=null, queue=[], cI=-1, rvd=false, tW=0;
+let bg='#8ACF00', tc='#000000';
+const BGP=['#8ACF00','#000000','#FFFFFF','#1a1a1a','#FFD700','#FF6B6B','#4ECDC4','#00A8E8','#FF0000','#7C3AED'];
+const TXP=['#000000','#FFFFFF','#8ACF00','#FFD700','#FF6B6B','#4ECDC4','#00A8E8','#FF0000'];
+
+// ═══════════════ DOM ═══════════════
+const $=id=>document.getElementById(id);
+const hP=$('home-page'),bP=$('book-page'),lP=$('list-page'),wP=$('wordlist-page');
+const fP=$('fav-page'),stP=$('settings-page'),mP=$('main-page');
+const bC=$('book-container');
+const cbP=$('custom-books-page'),clP=$('custom-lists-page'),cwP=$('custom-wordlist-page');
+const cbC=$('custom-books-container'),clC=$('custom-lists-container'),cwR=$('custom-word-rows');
+
+// ═══════════════ CUSTOM BOOKS EVENT LISTENERS ═══════════════
+$('custom-add-word-btn').addEventListener('click',()=>{ $('custom-add-word-form').style.display=''; $('custom-add-word-btn').style.display='none'; $('aw-en').focus(); });
+$('aw-cancel').addEventListener('click',()=>{ $('custom-add-word-form').style.display='none'; $('custom-add-word-btn').style.display=''; });
+$('aw-save').addEventListener('click',()=>{
+    const en=$('aw-en').value.trim(); const zh=$('aw-zh').value.trim();
+    if(!en||!zh){ alert('单词和释义不能为空'); return; }
+    const cb=lCB(); const bn=cBN(cB); const ln=cL;
+    if(!cb[bn]||!cb[bn].lists[ln]) return;
+    cb[bn].lists[ln].push({en,ph:$('aw-ph').value.trim(),ps:$('aw-ps').value.trim(),zh});
+    sCB(cb);
+    $('aw-en').value=''; $('aw-ph').value=''; $('aw-ps').value=''; $('aw-zh').value='';
+    $('custom-add-word-form').style.display='none'; $('custom-add-word-btn').style.display='';
+    sCWL(bn,ln); rH();
+});
+$('aw-en').addEventListener('keydown',e=>{ if(e.key==='Enter') $('aw-zh').focus(); });
+$('aw-zh').addEventListener('keydown',e=>{ if(e.key==='Enter') $('aw-save').click(); });
+$('custom-create-book-btn').addEventListener('click',()=>{
+    const nm=prompt('词汇书名称（如：我的雅思词汇）：'); if(!nm||!nm.trim()) return;
+    const cb=lCB(); if(cb[nm.trim()]){ alert('该词汇书已存在'); return; }
+    cb[nm.trim()]={lists:{}}; sCB(cb); sCBP(); rH();
+});
+$('custom-books-back-btn').addEventListener('click',()=>go(hP));
+$('custom-lists-back-btn').addEventListener('click',()=>sCBP());
+$('custom-wordlist-back-btn').addEventListener('click',()=>{ if(cB&&iCB(cB)) sCBL(cBN(cB)); });
+
+// bulk import
+$('custom-bulk-import-btn').addEventListener('click',()=>{ $('bulk-import-modal').style.display=''; $('bulk-import-text').focus(); });
+$('bulk-import-cancel').addEventListener('click',()=>{ $('bulk-import-modal').style.display='none'; $('bulk-import-text').value=''; });
+$('bulk-import-do').addEventListener('click',()=>{
+    const raw=$('bulk-import-text').value.trim(); if(!raw) return;
+    let words=[];
+    // try JSON first
+    if(raw.startsWith('[')){
+        try{ words=JSON.parse(raw); }catch(e){ alert('JSON 格式错误'); return; }
+        if(!Array.isArray(words)){ alert('请输入 JSON 数组'); return; }
+    } else {
+        // text format: each line "word /phonetic/ pos. translation" or "word  translation"
+        raw.split('\n').forEach(line=>{
+            line=line.trim(); if(!line) return;
+            // try to match: word /phonetic/ pos. translation
+            const m=line.match(/^(\S+)\s+\/([^/]+)\/\s*(\S+\.)?\s*(.+)/);
+            if(m){ words.push({en:m[1],ph:'/'+m[2]+'/',ps:(m[3]||'').trim(),zh:m[4].trim()}); return; }
+            // simple: word  translation
+            const parts=line.split(/\s+/);
+            if(parts.length>=2){ words.push({en:parts[0],ph:'',ps:'',zh:parts.slice(1).join(' ')}); }
+        });
+    }
+    if(words.length===0){ alert('未识别到有效单词'); return; }
+    // validate and add
+    const cb=lCB(); const bn=cBN(cB); const ln=cL;
+    if(!cb[bn]||!cb[bn].lists[ln]) return;
+    let added=0;
+    words.forEach(w=>{ if(w.en&&w.zh){ cb[bn].lists[ln].push({en:w.en,ph:w.ph||'',ps:w.ps||'',zh:w.zh}); added++; } });
+    sCB(cb);
+    $('bulk-import-modal').style.display='none'; $('bulk-import-text').value='';
+    sCWL(bn,ln); rH();
+    alert('成功导入 '+added+' 个单词');
+});
+
+// ═══════════════ COLORS ═══════════════
+function aC(){ document.documentElement.style.setProperty('--bg',bg); document.documentElement.style.setProperty('--text',tc); }
+function bS(c,p,cur,oc){
+    c.innerHTML='';
+    p.forEach(x=>{ const s=document.createElement('div'); s.className='color-swatch'+(x===cur?' active':''); s.style.backgroundColor=x; s.addEventListener('click',()=>oc(x)); c.appendChild(s); });
+}
+function rSw(){
+    bS($('bg-swatches'),BGP,bg,sB); bS($('text-swatches'),TXP,tc,sT);
+    $('bg-color-picker').value=bg; $('bg-color-hex').value=bg;
+    $('text-color-picker').value=tc; $('text-color-hex').value=tc;
+}
+function sB(c){ bg=c; aC(); rSw(); } function sT(c){ tc=c; aC(); rSw(); }
+$('bg-color-picker').addEventListener('input',()=>sB($('bg-color-picker').value));
+$('text-color-picker').addEventListener('input',()=>sT($('text-color-picker').value));
+$('bg-color-hex').addEventListener('change',()=>{const v=$('bg-color-hex').value.trim();if(/^#[0-9a-fA-F]{6}$/.test(v))sB(v);});
+$('text-color-hex').addEventListener('change',()=>{const v=$('text-color-hex').value.trim();if(/^#[0-9a-fA-F]{6}$/.test(v))sT(v);});
+
+// ═══════════════ NAVIGATION ═══════════════
+function go(p){ [hP,bP,lP,wP,fP,stP,mP,cbP,clP,cwP].forEach(x=>x.classList.add('hidden')); p.classList.remove('hidden'); }
+
+// ═══════════════ HOME ═══════════════
+function rH(){
+    const f=lF(); $('home-fav-count').textContent=f.length+' 词';
+    const av=mVB(); const ks=Object.keys(av); let tw=0; ks.forEach(n=>{ tw+=Object.values(av[n].lists).reduce((s,l)=>s+l.length,0); });
+    $('home-books-count').textContent=ks.length+' 本书 / '+tw+' 词';
+    const cb=lCB(); const cks=Object.keys(cb); let ctw=0; cks.forEach(n=>{ ctw+=Object.values(cb[n].lists).reduce((s,l)=>s+l.length,0); });
+    $('home-custom-count').textContent=cks.length+' 本 / '+ctw+' 词';
+}
+
+// ═══════════════ FAVORITES ═══════════════
+function sFv(){
+    const f=lF(); $('fav-rows').innerHTML='';
+    if(f.length===0){ $('fav-empty').style.display=''; $('fav-rows').style.display='none'; }
+    else { $('fav-empty').style.display='none'; $('fav-rows').style.display='';
+        f.forEach((w,i)=>{
+            const r=document.createElement('div'); r.className='word-row';
+            r.innerHTML='<span class="row-en">'+w.en.toLowerCase()+'</span><span class="row-zh">'+w.ps+' '+w.zh+'</span><button class="row-fav faved">★</button>';
+            r.querySelector('.row-fav').addEventListener('click',e=>{ e.stopPropagation(); const f2=lF(); const fi=f2.findIndex(x=>x.en===w.en); if(fi>=0){f2.splice(fi,1);sF(f2);} sFv(); rH(); rFM(); });
+            r.addEventListener('click',()=>{ const ws=lF().map(x=>({en:x.en,ph:x.ph||'',ps:x.ps||'',zh:x.zh||''})); sL(ws,i,null,null); });
+            $('fav-rows').appendChild(r);
+        });
+    }
+    go(fP);
+}
+
+// ═══════════════ PRONUNCIATION ═══════════════
+function speak(w){
+    try {
+        window.speechSynthesis.cancel();
+        const u=new SpeechSynthesisUtterance(w);
+        u.lang='en-US'; u.rate=0.85; u.volume=0.9;
+        const sb=$('speak-btn');
+        if(sb){ sb.textContent='🔊'; sb.classList.add('playing'); }
+        u.onend=()=>{ if(sb){ sb.textContent='🔊'; sb.classList.remove('playing'); } };
+        u.onerror=()=>{ if(sb){ sb.textContent='🔊'; sb.classList.remove('playing'); } };
+        window.speechSynthesis.speak(u);
+    } catch(e){}
+}
+
+// ═══════════════ MAIN LEARNING ═══════════════
+function sL(wl,si,bk,ls){ cB=bk; cL=ls; queue=bQ(wl);
+    queue.forEach((q,i)=>{q.due=(i-si+wl.length)%wl.length;});
+    tW=wl.length; rvd=false; go(mP); rFM(); lNW();
+}
+function rFM(){ if(mP.classList.contains('hidden')) return; if(cI<0||!queue[cI]) return; $('main-fav-btn').classList.toggle('faved',iF(queue[cI].word)); }
+function lNW(){
+    if(iD(queue)){ goBackFromLearning(); return; }
+    const {item,index}=gND(queue); if(!item){ goBackFromLearning(); return; }
+    cI=index; rvd=false;
+    $('word-text').textContent=item.word.en.toLowerCase();
+    $('word-phonetic').textContent=item.word.ph||'';
+    $('word-meta').textContent=(item.word.ps||'')+' '+(item.word.zh||'');
+    $('word-meta-wrap').classList.remove('revealed');
+    $('tap-hint').classList.remove('hidden-hint');
+    $('tap-hint').textContent='点击显示释义';
+    $('speak-btn').style.display='none';
+    $('word-text').style.filter=''; $('word-text').style.transform='';
+    $('main-fav-btn').classList.toggle('faved',iF(item.word));
+    uP();
+}
+function rW(){
+    if(rvd) return; rvd=true;
+    $('word-meta-wrap').classList.add('revealed');
+    $('tap-hint').textContent='选择熟悉程度继续';
+    $('speak-btn').style.display='';
+    if(queue[cI]&&queue[cI].word) speak(queue[cI].word.en);
+}
+function uP(){ const r=cR(queue); const d=tW-r; $('progress-count').textContent=d+'/'+tW; $('progress-bar-inner').style.width=(d/tW*100)+'%'; $('progress-label').textContent=r<=1?(r===1?'最后一个':'剩余'):'剩余'; }
+function adv(rt){
+    if(iD(queue)&&cI===-1) return;
+    if(!rvd&&rt===2){ $('word-text').style.filter='blur(0)'; $('word-text').style.transform='scaleY(1)'; }
+    aR(queue,cI,rt);
+    setTimeout(()=>{ lNW(); $('bottom-bar').style.opacity=''; $('bottom-bar').style.pointerEvents=''; },rt===2&&!rvd?150:250);
+}
+
+// ── Speaker button ──
+$('speak-btn').addEventListener('click',e=>{ e.stopPropagation(); if(queue[cI]&&queue[cI].word) speak(queue[cI].word.en); });
+
+// ── Two-tap ──
+$('word-stage').addEventListener('click',()=>{ if(iD(queue)) return; if(!rvd) rW(); });
+$('btn-unknown').addEventListener('click',e=>{ e.stopPropagation(); if(iD(queue)) return; if(!rvd) rW(); else adv(0); });
+$('btn-unsure').addEventListener('click',e=>{ e.stopPropagation(); if(iD(queue)) return; if(!rvd) rW(); else adv(1); });
+$('btn-know').addEventListener('click',e=>{ e.stopPropagation(); if(iD(queue)) return; adv(2); });
+$('main-fav-btn').addEventListener('click',e=>{ e.stopPropagation(); if(iD(queue)&&cI===-1) return; const nw=tF(queue[cI].word,cB||'',cL||''); $('main-fav-btn').classList.toggle('faved',nw); rH(); });
+
+// ── Keyboard ──
+document.addEventListener('keydown',e=>{
+    if(mP.classList.contains('hidden')) return; if(iD(queue)) return;
+    if(e.key==='ArrowLeft'){e.preventDefault();if(!rvd)rW();else adv(0);}
+    else if(e.key==='ArrowDown'){e.preventDefault();if(!rvd)rW();else adv(1);}
+    else if(e.key==='ArrowRight'){e.preventDefault();adv(2);}
+    else if(e.key===' '){e.preventDefault();rW();}
+});
+
+// ── Touch swipe ──
+let tX=0,tY=0,tO=false;
+$('word-stage').addEventListener('touchstart',e=>{tX=e.touches[0].clientX;tY=e.touches[0].clientY;tO=true;},{passive:true});
+$('word-stage').addEventListener('touchend',e=>{ if(!tO)return;tO=false;if(iD(queue))return;if(rvd)return; const dx=e.changedTouches[0].clientX-tX; const dy=e.changedTouches[0].clientY-tY; if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>50){ rW(); } });
+
+// ── Back buttons ──
+$('book-back-btn').addEventListener('click',()=>go(hP));
+$('list-back-btn').addEventListener('click',()=>sBS());
+$('wordlist-back-btn').addEventListener('click',()=>{ const av=mVB(); const ns=Object.keys(av[cB].lists); if(ns.length>1){ $('list-page-title').textContent=cB; $('list-container').innerHTML=''; ns.forEach(n=>{ const wc=av[cB].lists[n].length; const b=document.createElement('button'); b.className='list-item'; b.innerHTML=n+'<span class="extra">'+wc+' 词</span>'; b.addEventListener('click',()=>sWL(cB,n)); $('list-container').appendChild(b); }); go(lP); } else sBS(); });
+$('fav-back-btn').addEventListener('click',()=>go(hP));
+$('settings-back-btn').addEventListener('click',()=>go(hP));
+$('main-back-btn').addEventListener('click',()=>{ if(cB&&iCB(cB)){ sCWL(cBN(cB),cL); } else if(cB&&cL) sWL(cB,cL); else sFv(); });
+
+// ── Home buttons ──
+$('home-books').addEventListener('click',()=>sBS());
+$('home-fav-view').addEventListener('click',()=>sFv());
+$('home-fav-study').addEventListener('click',()=>{ const ws=lF().map(x=>({en:x.en,ph:x.ph||'',ps:x.ps||'',zh:x.zh||''})); if(ws.length===0)return; sL(ws,0,null,null); });
+$('home-custom-books').addEventListener('click',()=>sCBP());
+$('home-settings').addEventListener('click',()=>{ rSw(); go(stP); });
+
+// ═══════════════ INIT ═══════════════
+aC(); rH(); go(hP); rSw();
+</script>
+</body>
+</html>
