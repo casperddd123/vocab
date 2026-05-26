@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>br*t vocab</title>
+<title>vocabrat</title>
 <style>
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 :root { --bg:#8ACF00; --text:#000000; }
@@ -323,13 +323,36 @@ body {
 }
 .modal-overlay button:active { background:var(--text); color:var(--bg); }
 .modal-overlay .modal-hint { font-size:clamp(11px,1.8vw,13px); opacity:0.25; letter-spacing:0.06em; }
+.modal-overlay .modal-title { font-size:clamp(17px,3.5vw,23px); letter-spacing:0.05em; filter:blur(0.5px); transform:scaleY(1.12); }
+.modal-overlay input[type=text] {
+    font-family:inherit; font-size:clamp(14px,2.4vw,17px);
+    background:transparent; border:1.5px solid currentColor; color:inherit;
+    padding:10px 12px; letter-spacing:0.03em; width:100%; max-width:340px; opacity:0.8;
+}
+.modal-overlay input[type=text]:focus { outline:none; opacity:1; }
+.modal-overlay input::placeholder { color:inherit; opacity:0.18; }
+.modal-field { width:100%; max-width:340px; }
+.modal-field-label { font-size:clamp(10px,1.6vw,12px); opacity:0.3; letter-spacing:0.08em; margin-bottom:4px; text-transform:lowercase; }
+.modal-field input { width:100%; }
+.modal-row { display:flex; gap:8px; width:100%; max-width:340px; }
+.modal-row .modal-field { flex:1; max-width:none; }
+.modal-row .modal-field.w40 { flex:0.4; min-width:60px; }
+/* lang chips */
+.lang-chips { display:flex; flex-wrap:wrap; gap:7px; width:100%; max-width:340px; justify-content:center; }
+.lang-chip {
+    font-family:inherit; font-size:clamp(12px,2vw,14px);
+    background:transparent; border:1.5px solid currentColor; color:inherit;
+    cursor:pointer; padding:7px 14px; letter-spacing:0.04em;
+    transition:background 0.12s, color 0.12s; opacity:0.4;
+}
+.lang-chip:active, .lang-chip.selected { background:var(--text); color:var(--bg); opacity:1; }
 </style>
 </head>
 <body>
 
 <div id="home-page" class="page home-page">
     <div class="home-header">
-        <div class="home-title">br*t vocab</div>
+        <div class="home-title">vocabrat</div>
         <div class="home-sub">a vocabulary thing</div>
         <div class="home-divider"></div>
     </div>
@@ -489,23 +512,11 @@ body {
             <button class="wordlist-start-btn" id="custom-wordlist-start-btn">开始学习</button>
         </div>
     </div>
-    <div id="custom-add-word-form" class="add-word-form" style="display:none;">
-        <div class="add-word-row">
-            <input type="text" id="aw-en" placeholder="单词（必填）">
-            <input type="text" id="aw-ph" placeholder="音标（可选）">
-        </div>
-        <div class="add-word-row">
-            <input type="text" id="aw-ps" placeholder="词性（可选）" style="flex:0.6">
-            <input type="text" id="aw-zh" placeholder="释义（必填）" style="flex:1.4">
-        </div>
-        <div class="add-word-btns">
-            <button class="primary" id="aw-save">保存</button>
-            <button id="aw-cancel">取消</button>
-        </div>
-    </div>
-    <button class="custom-create-btn" id="custom-add-word-btn" style="margin:6px 18px;width:auto;">+ 添加单词</button>
-    <button class="custom-create-btn" id="custom-bulk-import-btn" style="margin:2px 18px;width:auto;">+ 批量导入</button>
     <div class="word-rows" id="custom-word-rows"></div>
+    <div style="display:flex;gap:6px;padding:8px 18px;flex-shrink:0;">
+        <button class="custom-create-btn" id="custom-add-word-btn" style="flex:1;margin:0;">+ 添加单词</button>
+        <button class="custom-create-btn" id="custom-bulk-import-btn" style="flex:1;margin:0;">+ 批量导入</button>
+    </div>
 </div>
 
 <!-- bulk import modal -->
@@ -524,12 +535,54 @@ body {
     </div>
 </div>
 
-<script>
-window.onerror = function(msg, url, line, col, err) {
-    document.body.innerHTML += '<div style=\"position:fixed;top:0;left:0;right:0;background:#f00;color:#fff;padding:10px;font-size:14px;z-index:99999;white-space:pre-wrap;max-height:60vh;overflow:auto;font-family:monospace;\">JS ERROR: ' + msg + ' (line ' + line + ')</div>';
-    return false;
-};
-</script>
+<!-- add word modal -->
+<div id="add-word-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-title" id="awm-title">添加单词</div>
+    <div class="modal-field">
+        <div class="modal-field-label"><span class="awm-l-w">单词</span> <span style="opacity:0.4">· 必填</span></div>
+        <div class="modal-field-hint awm-h-w" style="font-size:clamp(10px,1.5vw,12px);opacity:0.2;letter-spacing:0.04em;margin-bottom:4px;"></div>
+        <input type="text" id="awm-en" placeholder="">
+    </div>
+    <div class="modal-row">
+        <div class="modal-field w40">
+            <div class="modal-field-label"><span class="awm-l-p">音标</span></div>
+            <div class="modal-field-hint awm-h-p" style="font-size:clamp(10px,1.5vw,12px);opacity:0.2;letter-spacing:0.04em;margin-bottom:4px;"></div>
+            <input type="text" id="awm-ph" placeholder="">
+        </div>
+        <div class="modal-field w40">
+            <div class="modal-field-label"><span class="awm-l-ps">词性</span></div>
+            <div class="modal-field-hint awm-h-ps" style="font-size:clamp(10px,1.5vw,12px);opacity:0.2;letter-spacing:0.04em;margin-bottom:4px;"></div>
+            <input type="text" id="awm-ps" placeholder="">
+        </div>
+    </div>
+    <div class="modal-field">
+        <div class="modal-field-label"><span class="awm-l-zh">释义</span> <span style="opacity:0.4">· 必填</span></div>
+        <div class="modal-field-hint awm-h-m" style="font-size:clamp(10px,1.5vw,12px);opacity:0.2;letter-spacing:0.04em;margin-bottom:4px;"></div>
+        <input type="text" id="awm-zh" placeholder="">
+    </div>
+    <div class="modal-btns" style="margin-top:6px;">
+        <button id="awm-save" class="primary">保存</button>
+        <button id="awm-cancel">取消</button>
+    </div>
+</div>
+
+<!-- create book modal -->
+<div id="create-book-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-title">创建词汇书</div>
+    <div class="modal-field">
+        <div class="modal-field-label">名称</div>
+        <input type="text" id="cbm-name" placeholder="如：我的日语词汇书">
+    </div>
+    <div class="modal-field" style="margin-top:4px;">
+        <div class="modal-field-label">语言</div>
+        <div class="lang-chips" id="cbm-langs"></div>
+    </div>
+    <div class="modal-btns" style="margin-top:10px;">
+        <button id="cbm-create" class="primary">创建</button>
+        <button id="cbm-cancel">取消</button>
+    </div>
+</div>
+
 <!-- Try to load full vocabulary data from external file -->
 <script src="brat-vocab-data.js"></script>
 <script>
@@ -1194,6 +1247,7 @@ function sCBL(bn){
     go(clP);
 }
 function sCWL(bn,ln){
+    cB='📒 '+bn; cL=ln;
     const cb=lCB(); if(!cb[bn]||!cb[bn].lists[ln]) return;
     const ws=cb[bn].lists[ln]; const f=lF();
     $('custom-wordlist-title').textContent=bn+' / '+ln;
@@ -1208,15 +1262,13 @@ function sCWL(bn,ln){
         const favBtn=document.createElement('button'); favBtn.className='row-fav'+(fd?' faved':''); favBtn.textContent='★';
         favBtn.addEventListener('click',e=>{ e.stopPropagation(); const nw=tF(w,bn,ln); favBtn.classList.toggle('faved',nw); rFM(); rH(); });
         const delBtn=document.createElement('button'); delBtn.className='row-del'; delBtn.textContent='×';
-        delBtn.addEventListener('click',e=>{ e.stopPropagation(); ws.splice(i,1); sCB(cb); sCWL(bn,ln); rH(); });
+        delBtn.addEventListener('click',e=>{ e.stopPropagation(); if(!confirm('删除单词 "'+w.en+'"？')) return; ws.splice(i,1); sCB(cb); sCWL(bn,ln); rH(); });
         acts.appendChild(favBtn); acts.appendChild(delBtn);
         r.appendChild(enSpan); r.appendChild(zhSpan); r.appendChild(acts);
-        r.addEventListener('click',()=>sL([...ws],i,bn,ln));
+        r.addEventListener('click',()=>sL([...ws],i,'📒 '+bn,ln));
         cwR.appendChild(r);
     });
-    $('custom-wordlist-start-btn').onclick=()=>sL([...ws],0,bn,ln);
-    $('custom-add-word-btn').style.display='';
-    $('custom-add-word-form').style.display='none';
+    $('custom-wordlist-start-btn').onclick=()=>sL([...ws],0,'📒 '+bn,ln);
     go(cwP);
 }
 
@@ -1294,27 +1346,93 @@ const bC=$('book-container');
 const cbP=$('custom-books-page'),clP=$('custom-lists-page'),cwP=$('custom-wordlist-page');
 const cbC=$('custom-books-container'),clC=$('custom-lists-container'),cwR=$('custom-word-rows');
 
+// ═══════════════ MULTI-LANGUAGE ═══════════════
+const LANGS={
+'en-US':{name:'English',word:'Word 单词',phonetic:'Phonetic 音标',pos:'POS 词性',meaning:'Meaning 释义',sp:'en-US',
+ hw:'要学习的词汇',hp:'发音标注',hs:'如 n. v. adj.',hm:'翻译或解释'},
+'zh-CN':{name:'中文',word:'单词',phonetic:'音标',pos:'词性',meaning:'释义',sp:'zh-CN',
+ hw:'要学习的词汇',hp:'发音标注',hs:'如 n. v. adj.',hm:'翻译或解释'},
+'ja-JP':{name:'日本語',word:'単語 单词',phonetic:'読み 音标',pos:'品詞 词性',meaning:'意味 释义',sp:'ja-JP',
+ hw:'学習する語彙',hp:'発音表記',hs:'例 名 動 形',hm:'翻訳または説明'},
+'ko-KR':{name:'한국어',word:'단어 单词',phonetic:'발음 音标',pos:'품사 词性',meaning:'의미 释义',sp:'ko-KR',
+ hw:'학습할 어휘',hp:'발음 표기',hs:'예: n. v. adj.',hm:'번역 또는 설명'},
+'fr-FR':{name:'Français',word:'Mot 单词',phonetic:'Phonétique 音标',pos:'Nature 词性',meaning:'Sens 释义',sp:'fr-FR',
+ hw:'le terme à apprendre',hp:'guide de prononciation',hs:'ex. n. v. adj.',hm:'traduction ou définition'},
+'de-DE':{name:'Deutsch',word:'Wort 单词',phonetic:'Lautschrift 音标',pos:'Wortart 词性',meaning:'Bedeutung 释义',sp:'de-DE',
+ hw:'das zu lernende Wort',hp:'Aussprachehilfe',hs:'z.B. n. v. adj.',hm:'Übersetzung oder Definition'},
+'es-ES':{name:'Español',word:'Palabra 单词',phonetic:'Fonética 音标',pos:'Cat. 词性',meaning:'Significado 释义',sp:'es-ES',
+ hw:'el término a aprender',hp:'guía de pronunciación',hs:'ej. n. v. adj.',hm:'traducción o definición'},
+'it-IT':{name:'Italiano',word:'Parola 单词',phonetic:'Fonetica 音标',pos:'Cat. 词性',meaning:'Significato 释义',sp:'it-IT',
+ hw:'il termine da imparare',hp:'guida alla pronuncia',hs:'es. n. v. adj.',hm:'traduzione o definizione'},
+'pt-PT':{name:'Português',word:'Palavra 单词',phonetic:'Fonética 音标',pos:'Classe 词性',meaning:'Significado 释义',sp:'pt-PT',
+ hw:'o termo a aprender',hp:'guia de pronúncia',hs:'ex. n. v. adj.',hm:'tradução ou definição'},
+'ru-RU':{name:'Русский',word:'Слово 单词',phonetic:'Транскр. 音标',pos:'Часть речи 词性',meaning:'Значение 释义',sp:'ru-RU',
+ hw:'изучаемое слово',hp:'произношение',hs:'напр. сущ. гл.',hm:'перевод или определение'},
+};
+const LANG_KEYS=Object.keys(LANGS);
+let selLang='en-US';
+function gBL(bn){ const cb=lCB(); return (cb[bn]&&cb[bn].lang)||'en-US'; }
+function gLB(lang){ return LANGS[lang]||LANGS['en-US']; }
+function uAWL(lang){
+    const lb=gLB(lang);
+    document.querySelectorAll('.awm-l-w').forEach(e=>e.textContent=lb.word);
+    document.querySelectorAll('.awm-l-p').forEach(e=>e.textContent=lb.phonetic);
+    document.querySelectorAll('.awm-l-ps').forEach(e=>e.textContent=lb.pos);
+    document.querySelectorAll('.awm-l-zh').forEach(e=>e.textContent=lb.meaning);
+    document.querySelectorAll('.awm-h-w').forEach(e=>e.textContent=lb.hw||'');
+    document.querySelectorAll('.awm-h-p').forEach(e=>e.textContent=lb.hp||'');
+    document.querySelectorAll('.awm-h-ps').forEach(e=>e.textContent=lb.hs||'');
+    document.querySelectorAll('.awm-h-m').forEach(e=>e.textContent=lb.hm||'');
+}
+
 // ═══════════════ CUSTOM BOOKS EVENT LISTENERS ═══════════════
-$('custom-add-word-btn').addEventListener('click',()=>{ $('custom-add-word-form').style.display=''; $('custom-add-word-btn').style.display='none'; $('aw-en').focus(); });
-$('aw-cancel').addEventListener('click',()=>{ $('custom-add-word-form').style.display='none'; $('custom-add-word-btn').style.display=''; });
-$('aw-save').addEventListener('click',()=>{
-    const en=$('aw-en').value.trim(); const zh=$('aw-zh').value.trim();
+// -- add word modal --
+$('custom-add-word-btn').addEventListener('click',()=>{
+    const bn=cBN(cB), lang=gBL(bn); uAWL(lang);
+    $('awm-en').value=''; $('awm-ph').value=''; $('awm-ps').value=''; $('awm-zh').value='';
+    $('add-word-modal').style.display=''; $('awm-en').focus();
+});
+$('awm-cancel').addEventListener('click',()=>{ $('add-word-modal').style.display='none'; });
+$('awm-save').addEventListener('click',()=>{
+    const en=$('awm-en').value.trim(); const zh=$('awm-zh').value.trim();
     if(!en||!zh){ alert('单词和释义不能为空'); return; }
     const cb=lCB(); const bn=cBN(cB); const ln=cL;
     if(!cb[bn]||!cb[bn].lists[ln]) return;
-    cb[bn].lists[ln].push({en,ph:$('aw-ph').value.trim(),ps:$('aw-ps').value.trim(),zh});
+    cb[bn].lists[ln].push({en,ph:$('awm-ph').value.trim(),ps:$('awm-ps').value.trim(),zh});
     sCB(cb);
-    $('aw-en').value=''; $('aw-ph').value=''; $('aw-ps').value=''; $('aw-zh').value='';
-    $('custom-add-word-form').style.display='none'; $('custom-add-word-btn').style.display='';
+    $('add-word-modal').style.display='none';
     sCWL(bn,ln); rH();
 });
-$('aw-en').addEventListener('keydown',e=>{ if(e.key==='Enter') $('aw-zh').focus(); });
-$('aw-zh').addEventListener('keydown',e=>{ if(e.key==='Enter') $('aw-save').click(); });
-$('custom-create-book-btn').addEventListener('click',()=>{
-    const nm=prompt('词汇书名称（如：我的雅思词汇）：'); if(!nm||!nm.trim()) return;
-    const cb=lCB(); if(cb[nm.trim()]){ alert('该词汇书已存在'); return; }
-    cb[nm.trim()]={lists:{}}; sCB(cb); sCBP(); rH();
+$('awm-en').addEventListener('keydown',e=>{ if(e.key==='Enter') $('awm-zh').focus(); });
+$('awm-zh').addEventListener('keydown',e=>{ if(e.key==='Enter') $('awm-save').click(); });
+
+// -- create book modal --
+function sCBM(){
+    selLang='en-US';
+    const lc=$('cbm-langs'); lc.innerHTML='';
+    LANG_KEYS.forEach(k=>{
+        const chip=document.createElement('button');
+        chip.className='lang-chip'+(k==='en-US'?' selected':'');
+        chip.textContent=LANGS[k].name; chip.dataset.lang=k;
+        chip.addEventListener('click',()=>{
+            selLang=k;
+            lc.querySelectorAll('.lang-chip').forEach(c=>c.classList.toggle('selected',c.dataset.lang===k));
+        });
+        lc.appendChild(chip);
+    });
+    $('cbm-name').value='';
+    $('create-book-modal').style.display=''; $('cbm-name').focus();
+}
+$('custom-create-book-btn').addEventListener('click',sCBM);
+$('cbm-cancel').addEventListener('click',()=>{ $('create-book-modal').style.display='none'; });
+$('cbm-create').addEventListener('click',()=>{
+    const nm=$('cbm-name').value.trim(); if(!nm){ alert('请输入词汇书名称'); return; }
+    const cb=lCB(); if(cb[nm]){ alert('该词汇书已存在'); return; }
+    cb[nm]={lang:selLang,lists:{}}; sCB(cb);
+    $('create-book-modal').style.display='none'; sCBP(); rH();
 });
+$('cbm-name').addEventListener('keydown',e=>{ if(e.key==='Enter') $('cbm-create').click(); });
+
 $('custom-books-back-btn').addEventListener('click',()=>go(hP));
 $('custom-lists-back-btn').addEventListener('click',()=>sCBP());
 $('custom-wordlist-back-btn').addEventListener('click',()=>{ if(cB&&iCB(cB)) sCBL(cBN(cB)); });
@@ -1399,11 +1517,11 @@ function sFv(){
 }
 
 // ═══════════════ PRONUNCIATION ═══════════════
-function speak(w){
+function speak(w,lang){
     try {
         window.speechSynthesis.cancel();
         const u=new SpeechSynthesisUtterance(w);
-        u.lang='en-US'; u.rate=0.85; u.volume=0.9;
+        u.lang=lang||'en-US'; u.rate=0.85; u.volume=0.9;
         const sb=$('speak-btn');
         if(sb){ sb.textContent='🔊'; sb.classList.add('playing'); }
         u.onend=()=>{ if(sb){ sb.textContent='🔊'; sb.classList.remove('playing'); } };
@@ -1411,6 +1529,7 @@ function speak(w){
         window.speechSynthesis.speak(u);
     } catch(e){}
 }
+function cSL(){ if(!cB||!iCB(cB)) return 'en-US'; const bn=cBN(cB); const lb=gLB(gBL(bn)); return lb.sp; }
 
 // ═══════════════ MAIN LEARNING ═══════════════
 function sL(wl,si,bk,ls){ cB=bk; cL=ls; queue=bQ(wl);
@@ -1438,7 +1557,7 @@ function rW(){
     $('word-meta-wrap').classList.add('revealed');
     $('tap-hint').textContent='选择熟悉程度继续';
     $('speak-btn').style.display='';
-    if(queue[cI]&&queue[cI].word) speak(queue[cI].word.en);
+    if(queue[cI]&&queue[cI].word) speak(queue[cI].word.en, cSL());
 }
 function uP(){ const r=cR(queue); const d=tW-r; $('progress-count').textContent=d+'/'+tW; $('progress-bar-inner').style.width=(d/tW*100)+'%'; $('progress-label').textContent=r<=1?(r===1?'最后一个':'剩余'):'剩余'; }
 function adv(rt){
@@ -1449,7 +1568,7 @@ function adv(rt){
 }
 
 // ── Speaker button ──
-$('speak-btn').addEventListener('click',e=>{ e.stopPropagation(); if(queue[cI]&&queue[cI].word) speak(queue[cI].word.en); });
+$('speak-btn').addEventListener('click',e=>{ e.stopPropagation(); if(queue[cI]&&queue[cI].word) speak(queue[cI].word.en, cSL()); });
 
 // ── Two-tap ──
 $('word-stage').addEventListener('click',()=>{ if(iD(queue)) return; if(!rvd) rW(); });
