@@ -15,9 +15,20 @@ A minimal vocabulary learning app in a single HTML file. Supports any language �
 
 ## How to use
 
-1. Download `index.html` and `brat-vocab-data.js`
-2. Put them in the same folder
-3. Open `index.html` with any browser
+**在线使用：**
+- GitHub Pages：[casperddd123.github.io/vocab](https://casperddd123.github.io/vocab)（国外用户）
+- Gitee Pages：[casper-du.gitee.io/vocabrat](https://casper-du.gitee.io/vocabrat)（国内用户，速度快）
+- 建议固定一个浏览器使用，切换浏览器会导致收藏的单词丢失（数据存储在浏览器本地）
+
+**离线使用：**
+1. 下载 `index.html` 和 `brat-vocab-data.js`
+2. 放在同一个文件夹里
+3. 右键 `index.html` → 用浏览器打开即可
+
+## 源码
+
+- GitHub：[github.com/casperddd123/vocab](https://github.com/casperddd123/vocab)
+- Gitee：[gitee.com/casper-du/vocabrat](https://gitee.com/casper-du/vocabrat)
 
 ## Data source
 
