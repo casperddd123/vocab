@@ -16,8 +16,7 @@ A minimal vocabulary learning app in a single HTML file. Supports any language �
 ## How to use
 
 **在线使用：**
-- GitHub Pages：[casperddd123.github.io/vocab](https://casperddd123.github.io/vocab)（国外用户）
-- Gitee Pages：[casper-du.gitee.io/vocabrat](https://casper-du.gitee.io/vocabrat)（国内用户，速度快）
+- GitHub Pages：[casperddd123.github.io/vocab](https://casperddd123.github.io/vocab)
 - 建议固定一个浏览器使用，切换浏览器会导致收藏的单词丢失（数据存储在浏览器本地）
 
 **离线使用：**
@@ -28,7 +27,6 @@ A minimal vocabulary learning app in a single HTML file. Supports any language �
 ## 源码
 
 - GitHub：[github.com/casperddd123/vocab](https://github.com/casperddd123/vocab)
-- Gitee：[gitee.com/casper-du/vocabrat](https://gitee.com/casper-du/vocabrat)
 
 ## Data source
 
