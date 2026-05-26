@@ -1,13 +1,15 @@
-# vocab
+# vocabrat
 
-A minimal vocabulary learning app in a single HTML file.
+A minimal vocabulary learning app in a single HTML file. Supports any language — not just English.
 
 ## Features
 
-- 56,000+ words across CET-4, CET-6, 考研, IELTS, TOEFL, GRE
+- 56,000+ English words across CET-4, CET-6, 考研, IELTS, TOEFL, GRE
 - Spaced repetition algorithm
 - Favorite words collection (stored locally in browser)
-- Custom vocabulary books with bulk import
+- Custom vocabulary books — add your own words, any language
+- 10-language support for custom books: 中文, English, 日本語, 한국어, Français, Deutsch, Español, Italiano, Português, Русский (auto-switches field labels and TTS voice)
+- Bulk import (JSON or plain text)
 - Text-to-speech pronunciation
 - Customizable theme colors
 
