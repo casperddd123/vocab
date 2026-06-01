@@ -12,6 +12,7 @@ A minimal vocabulary learning app in a single HTML file. Supports any language â
 - Bulk import (JSON or plain text)
 - Text-to-speech pronunciation
 - Customizable theme colors
+- Adjustable font sizes â€” word and definition separately, with live preview
 
 ## How to use
 
