@@ -6,7 +6,7 @@
 <title>vocabrat</title>
 <style>
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-:root { --bg:#8ACF00; --text:#000000; }
+:root { --bg:#8ACF00; --text:#000000; --fs-w:1; --fs-m:1; }
 html, body {
     width:100%; height:100%; overflow:hidden;
     font-family:'Arial Narrow',Arial,sans-serif;
@@ -163,6 +163,26 @@ body {
     width:88px; letter-spacing:0.04em;
 }
 .settings-divider { width:100%; max-width:400px; height:1px; background:currentColor; opacity:0.08; }
+.fs-row { display:flex; align-items:center; gap:14px; margin-bottom:10px; }
+.fs-row .fs-label { font-size:clamp(12px,2vw,14px); letter-spacing:0.04em; opacity:0.5; min-width:36px; }
+.fs-row input[type=range] {
+    -webkit-appearance:none; appearance:none; flex:1; height:2px;
+    background:currentColor; opacity:0.25; outline:none;
+}
+.fs-row input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance:none; appearance:none; width:14px; height:14px;
+    border:1.5px solid currentColor; background:var(--bg); cursor:pointer;
+}
+.fs-row input[type=range]::-moz-range-thumb {
+    width:14px; height:14px; border:1.5px solid currentColor;
+    background:var(--bg); cursor:pointer; border-radius:0;
+}
+.fs-row .fs-val { font-size:clamp(11px,1.8vw,13px); opacity:0.3; letter-spacing:0.04em; min-width:36px; text-align:right; }
+.fontsize-bar {
+    flex-direction:column; gap:10px; padding:6px 24px 28px;
+}
+.fontsize-bar .fs-row { width:100%; max-width:340px; margin:0 auto; }
+.fs-btns { display:flex; gap:10px; justify-content:center; width:100%; max-width:340px; margin:6px auto 0; }
 
 /* main flashcard */
 .main-page { justify-content:flex-start; padding:0; }
@@ -187,7 +207,7 @@ body {
 }
 .word-text {
     font-family:'Arial Narrow',Arial,sans-serif;
-    font-size:clamp(56px,11vw,108px); text-transform:lowercase;
+    font-size:calc(clamp(56px,11vw,108px) * var(--fs-w)); text-transform:lowercase;
     letter-spacing:0.02em; line-height:1.08; text-align:center;
     filter:blur(0.8px); transform:scaleY(1.15); word-break:break-all;
     transition:filter 0.2s, transform 0.2s;
@@ -199,7 +219,7 @@ body {
 }
 .word-meta-wrap.revealed { opacity:1; transform:translateY(0); }
 .word-phonetic { font-size:clamp(14px,2.5vw,18px); opacity:0.28; letter-spacing:0.06em; text-align:center; filter:blur(0.3px); transform:scaleY(1.08); }
-.word-meta { font-size:clamp(16px,3vw,22px); opacity:0.4; letter-spacing:0.04em; text-align:center; filter:blur(0.3px); transform:scaleY(1.08); max-width:320px; line-height:1.4; }
+.word-meta { font-size:calc(clamp(16px,3vw,22px) * var(--fs-m)); opacity:0.4; letter-spacing:0.04em; text-align:center; filter:blur(0.3px); transform:scaleY(1.08); max-width:320px; line-height:1.4; }
 .tap-hint { margin-top:16px; font-size:clamp(11px,1.8vw,13px); opacity:0.18; letter-spacing:0.06em; filter:blur(0.3px); transition:opacity 0.25s; }
 .tap-hint.hidden-hint { opacity:0; }
 .speak-btn {
@@ -431,8 +451,24 @@ body {
     <div class="fav-empty" id="fav-empty" style="display:none;">还没有收藏单词</div>
 </div>
 
-<div id="settings-page" class="page settings-page hidden">
+<div id="settings-page" class="page list-page hidden">
     <div class="top-bar"><button class="back-btn" id="settings-back-btn">← 返回</button></div>
+    <div class="page-title">设置</div>
+    <div class="page-subtitle">settings</div>
+    <div class="list-container">
+        <button class="list-item" id="settings-color-entry">
+            颜色设置
+            <span class="extra">背景 · 文字</span>
+        </button>
+        <button class="list-item" id="settings-font-entry">
+            字体大小
+            <span class="extra">单词 · 释义</span>
+        </button>
+    </div>
+</div>
+
+<div id="color-settings-page" class="page settings-page hidden">
+    <div class="top-bar"><button class="back-btn" id="color-settings-back-btn">← 返回</button></div>
     <div class="settings-section">
         <div class="settings-label">背景颜色</div>
         <div class="color-swatches" id="bg-swatches"></div>
@@ -448,6 +484,36 @@ body {
         <div class="custom-row">
             <input type="color" class="custom-color-input" id="text-color-picker">
             <input type="text" class="custom-hex" id="text-color-hex" maxlength="7" placeholder="#000000">
+        </div>
+    </div>
+</div>
+
+<div id="fontsize-page" class="page main-page hidden">
+    <div class="main-top-bar">
+        <button class="back-btn" id="fontsize-back-btn">← 返回</button>
+    </div>
+    <div class="word-stage">
+        <div class="word-text">romantic</div>
+        <div class="word-meta-wrap revealed">
+            <div class="word-phonetic">/roʊˈmæntɪk/</div>
+            <div class="word-meta">adj. 浪漫的；多情的</div>
+        </div>
+        <button class="speak-btn" id="fontsize-speak-btn" title="朗读发音">🔊</button>
+    </div>
+    <div class="bottom-bar fontsize-bar">
+        <div class="fs-row">
+            <span class="fs-label">单词</span>
+            <input type="range" id="fs-word" min="50" max="150" value="100" step="5">
+            <span class="fs-val" id="fs-word-val">100%</span>
+        </div>
+        <div class="fs-row">
+            <span class="fs-label">释义</span>
+            <input type="range" id="fs-meta" min="50" max="150" value="100" step="5">
+            <span class="fs-val" id="fs-meta-val">100%</span>
+        </div>
+        <div class="fs-btns">
+            <button class="fam-btn" id="fs-reset-btn">恢复默认</button>
+            <button class="fam-btn" id="fs-confirm-btn" style="background:var(--text);color:var(--bg);">确认修改</button>
         </div>
     </div>
 </div>
@@ -1204,7 +1270,7 @@ function tF(w,bk,ls){
 }
 
 // ═══════════════ CUSTOM BOOKS ═══════════════
-const CBK='brat-vocab-custom';
+const CBK='brat-vocab-custom', FSK='brat-vocab-fontsize';
 function lCB(){ try{return JSON.parse(localStorage.getItem(CBK))||{};}catch{return{};} }
 function sCB(d){ localStorage.setItem(CBK,JSON.stringify(d)); }
 function mVB(){ const r={}; Object.entries(V).forEach(([n,d])=>{r[n]=JSON.parse(JSON.stringify(d));}); Object.entries(lCB()).forEach(([n,d])=>{r['📒 '+n]=JSON.parse(JSON.stringify(d));}); return r; }
@@ -1334,7 +1400,7 @@ function iD(q){ return cR(q)===0; }
 
 // ═══════════════ STATE ═══════════════
 let cB=null, cL=null, queue=[], cI=-1, rvd=false, tW=0;
-let bg='#8ACF00', tc='#000000';
+let bg='#8ACF00', tc='#000000', fsW=100, fsM=100;
 const BGP=['#8ACF00','#000000','#FFFFFF','#1a1a1a','#FFD700','#FF6B6B','#4ECDC4','#00A8E8','#FF0000','#7C3AED'];
 const TXP=['#000000','#FFFFFF','#8ACF00','#FFD700','#FF6B6B','#4ECDC4','#00A8E8','#FF0000'];
 
@@ -1342,6 +1408,7 @@ const TXP=['#000000','#FFFFFF','#8ACF00','#FFD700','#FF6B6B','#4ECDC4','#00A8E8'
 const $=id=>document.getElementById(id);
 const hP=$('home-page'),bP=$('book-page'),lP=$('list-page'),wP=$('wordlist-page');
 const fP=$('fav-page'),stP=$('settings-page'),mP=$('main-page');
+const coP=$('color-settings-page'),fsP=$('fontsize-page');
 const bC=$('book-container');
 const cbP=$('custom-books-page'),clP=$('custom-lists-page'),cwP=$('custom-wordlist-page');
 const cbC=$('custom-books-container'),clC=$('custom-lists-container'),cwR=$('custom-word-rows');
@@ -1472,6 +1539,9 @@ $('bulk-import-do').addEventListener('click',()=>{
 });
 
 // ═══════════════ COLORS ═══════════════
+function lFS(){ try{const v=JSON.parse(localStorage.getItem(FSK));if(v){fsW=v.w||100;fsM=v.m||100;}}catch{} aFS(); }
+function sFS(){ localStorage.setItem(FSK,JSON.stringify({w:fsW,m:fsM})); aFS(); }
+function aFS(){ document.documentElement.style.setProperty('--fs-w',(fsW/100).toFixed(2)); document.documentElement.style.setProperty('--fs-m',(fsM/100).toFixed(2)); }
 function aC(){ document.documentElement.style.setProperty('--bg',bg); document.documentElement.style.setProperty('--text',tc); }
 function bS(c,p,cur,oc){
     c.innerHTML='';
@@ -1482,14 +1552,22 @@ function rSw(){
     $('bg-color-picker').value=bg; $('bg-color-hex').value=bg;
     $('text-color-picker').value=tc; $('text-color-hex').value=tc;
 }
+function rFSw(){
+    $('fs-word').value=fsW; $('fs-word-val').textContent=fsW+'%';
+    $('fs-meta').value=fsM; $('fs-meta-val').textContent=fsM+'%';
+}
 function sB(c){ bg=c; aC(); rSw(); } function sT(c){ tc=c; aC(); rSw(); }
 $('bg-color-picker').addEventListener('input',()=>sB($('bg-color-picker').value));
 $('text-color-picker').addEventListener('input',()=>sT($('text-color-picker').value));
 $('bg-color-hex').addEventListener('change',()=>{const v=$('bg-color-hex').value.trim();if(/^#[0-9a-fA-F]{6}$/.test(v))sB(v);});
 $('text-color-hex').addEventListener('change',()=>{const v=$('text-color-hex').value.trim();if(/^#[0-9a-fA-F]{6}$/.test(v))sT(v);});
+$('fs-word').addEventListener('input',()=>{ fsW=parseInt($('fs-word').value); $('fs-word-val').textContent=fsW+'%'; aFS(); });
+$('fs-meta').addEventListener('input',()=>{ fsM=parseInt($('fs-meta').value); $('fs-meta-val').textContent=fsM+'%'; aFS(); });
+$('fs-reset-btn').addEventListener('click',()=>{ lFS(); rFSw(); });
+$('fs-confirm-btn').addEventListener('click',()=>{ sFS(); go(stP); });
 
 // ═══════════════ NAVIGATION ═══════════════
-function go(p){ [hP,bP,lP,wP,fP,stP,mP,cbP,clP,cwP].forEach(x=>x.classList.add('hidden')); p.classList.remove('hidden'); }
+function go(p){ [hP,bP,lP,wP,fP,stP,mP,cbP,clP,cwP,coP,fsP].forEach(x=>x.classList.add('hidden')); p.classList.remove('hidden'); }
 
 // ═══════════════ HOME ═══════════════
 function rH(){
@@ -1517,12 +1595,12 @@ function sFv(){
 }
 
 // ═══════════════ PRONUNCIATION ═══════════════
-function speak(w,lang){
+function speak(w,lang,btnId){
     try {
         window.speechSynthesis.cancel();
         const u=new SpeechSynthesisUtterance(w);
         u.lang=lang||'en-US'; u.rate=0.85; u.volume=0.9;
-        const sb=$('speak-btn');
+        const sb=$(btnId||'speak-btn');
         if(sb){ sb.textContent='🔊'; sb.classList.add('playing'); }
         u.onend=()=>{ if(sb){ sb.textContent='🔊'; sb.classList.remove('playing'); } };
         u.onerror=()=>{ if(sb){ sb.textContent='🔊'; sb.classList.remove('playing'); } };
@@ -1597,6 +1675,8 @@ $('list-back-btn').addEventListener('click',()=>sBS());
 $('wordlist-back-btn').addEventListener('click',()=>{ const av=mVB(); const ns=Object.keys(av[cB].lists); if(ns.length>1){ $('list-page-title').textContent=cB; $('list-container').innerHTML=''; ns.forEach(n=>{ const wc=av[cB].lists[n].length; const b=document.createElement('button'); b.className='list-item'; b.innerHTML=n+'<span class="extra">'+wc+' 词</span>'; b.addEventListener('click',()=>sWL(cB,n)); $('list-container').appendChild(b); }); go(lP); } else sBS(); });
 $('fav-back-btn').addEventListener('click',()=>go(hP));
 $('settings-back-btn').addEventListener('click',()=>go(hP));
+$('color-settings-back-btn').addEventListener('click',()=>go(stP));
+$('fontsize-back-btn').addEventListener('click',()=>go(stP));
 $('main-back-btn').addEventListener('click',()=>{ if(cB&&iCB(cB)){ sCWL(cBN(cB),cL); } else if(cB&&cL) sWL(cB,cL); else sFv(); });
 
 // ── Home buttons ──
@@ -1604,10 +1684,13 @@ $('home-books').addEventListener('click',()=>sBS());
 $('home-fav-view').addEventListener('click',()=>sFv());
 $('home-fav-study').addEventListener('click',()=>{ const ws=lF().map(x=>({en:x.en,ph:x.ph||'',ps:x.ps||'',zh:x.zh||''})); if(ws.length===0)return; sL(ws,0,null,null); });
 $('home-custom-books').addEventListener('click',()=>sCBP());
-$('home-settings').addEventListener('click',()=>{ rSw(); go(stP); });
+$('home-settings').addEventListener('click',()=>{ go(stP); });
+$('settings-color-entry').addEventListener('click',()=>{ rSw(); go(coP); });
+$('settings-font-entry').addEventListener('click',()=>{ rFSw(); go(fsP); });
+$('fontsize-speak-btn').addEventListener('click',()=>{ speak('romantic','en-US','fontsize-speak-btn'); });
 
 // ═══════════════ INIT ═══════════════
-aC(); rH(); go(hP); rSw();
+aC(); lFS(); rH(); go(hP); rSw();
 </script>
 </body>
 </html>
